@@ -1,2 +1,2 @@
-# Proyecto-1---Implementaci-n-de-laberinto-
+# Proyecto #1 - Implementación de Laberinto
 Primer Proyecto del Curso Analisis de Algoritmos
