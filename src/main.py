@@ -8,7 +8,7 @@ import Laberintos
 def main(page: ft.Page):
     page.window.maximized = True
 
-    dd = ft.Dropdown(
+    selectorDimensiones = ft.Dropdown(
         width=150,
         options=[
             ft.dropdown.Option("5x5"),
@@ -17,6 +17,7 @@ def main(page: ft.Page):
             ft.dropdown.Option("20x20"),
             ft.dropdown.Option("25x25"),
         ],
+        text_size=16
     )
     
     def generarTabla(matriz):
@@ -39,22 +40,37 @@ def main(page: ft.Page):
             tabla.append(ft.Column([ ft.Text(""), column]))
         return tabla
     
-    dd.value = "5x5"
-    matriz = Laberintos.crearCaminoAleatorio(int(dd.value.split("x")[0]))
+    selectorDimensiones.value = "5x5"
+    matriz = Laberintos.crearCaminoAleatorio(int(selectorDimensiones.value.split("x")[0]))
     tabla_controls = ft.Row(
         controls=generarTabla(matriz),
         spacing=0,
-        alignment=ft.MainAxisAlignment.START
+        alignment=ft.MainAxisAlignment.CENTER
     )
 
     def actualizarTabla(e):
-        matriz = Laberintos.crearCaminoAleatorio(int(dd.value.split("x")[0]))
+        matriz = Laberintos.crearCaminoAleatorio(int(selectorDimensiones.value.split("x")[0]))
         tabla_controls.controls = generarTabla(matriz)
         page.update()
     
-    dd.on_change = actualizarTabla
-    page.add(dd)
-    page.add(tabla_controls)
+    selectorDimensiones.on_change = actualizarTabla
+
+    page.add(
+        ft.Column(
+            controls=[
+                ft.Container(
+                    content=selectorDimensiones, 
+                    alignment=ft.alignment.top_center
+                ),
+                ft.Container(
+                    content=tabla_controls, 
+                    alignment=ft.alignment.top_center
+                )
+            ],
+            scroll=ft.ScrollMode.AUTO,
+            expand=True
+        )
+    )
 
 
 ft.app(main, assets_dir="assets")
