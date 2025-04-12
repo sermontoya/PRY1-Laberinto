@@ -2,23 +2,40 @@ import flet as ft
 
 
 def main(page: ft.Page):
-    counter = ft.Text("0", size=50, data=0)
-
-    def increment_click(e):
-        counter.data += 1
-        counter.value = str(counter.data)
-        counter.update()
-
-    page.floating_action_button = ft.FloatingActionButton(
-        icon=ft.Icons.ADD, on_click=increment_click
-    )
+    
+    matriz = [
+        [1, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0],
+        [0, 1, 1, 0, 0],
+        [0, 0, 1, 1, 0],
+        [0, 0, 0, 1, 1],
+    ]
+    
+    def generarTabla(matriz):
+        tabla = []
+        for fila in matriz:
+            items = []
+            for i in fila:
+                items.append(
+                    ft.Container(
+                        content=ft.Text(value=str(i)),
+                        alignment=ft.alignment.center,
+                        width=50,
+                        height=50,
+                        bgcolor=ft.Colors.BLUE,
+                        border_radius=ft.border_radius.all(0),
+                    )
+                )
+            column = ft.Column(spacing=0, controls=items)
+            tabla.append(ft.Column([ ft.Text(""), column]))
+        return tabla
+    
     page.add(
-        ft.SafeArea(
-            ft.Container(
-                counter,
-                alignment=ft.alignment.center,
-            ),
-            expand=True,
+        ft.Row(
+            #controls=[col1, col2],
+            controls=generarTabla(matriz),
+            spacing=0,  # Espacio entre columnas
+            alignment=ft.MainAxisAlignment.START
         )
     )
 

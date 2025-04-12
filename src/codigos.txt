@@ -1,0 +1,44 @@
+"""
+    counter = ft.Text("0", size=50, data=0)
+
+    def increment_click(e):
+        counter.data += 1
+        counter.value = str(counter.data)
+        counter.update()
+
+    page.floating_action_button = ft.FloatingActionButton(
+        icon=ft.Icons.ADD, on_click=increment_click
+    )
+    page.add(
+        ft.SafeArea(
+            ft.Container(
+                counter,
+                alignment=ft.alignment.center,
+            ),
+            expand=True,
+        )
+    )
+    """
+
+    def items(count):
+        items = []
+        for i in range(1, count + 1):
+            items.append(
+                ft.Container(
+                    content=ft.Text(value=str(i)),
+                    alignment=ft.alignment.center,
+                    width=50,
+                    height=50,
+                    bgcolor=ft.Colors.BLUE,
+                    border_radius=ft.border_radius.all(0),
+                )
+            )
+        return items
+
+    col = ft.Column(spacing=0, controls=items(5))
+    col1 = ft.Column([ ft.Text(""), col])
+    col2 = ft.Column([ ft.Text(""), col])
+
+    columnas = []
+    for i in range(5):
+        columnas.append(ft.Column([ ft.Text(""), col]))
