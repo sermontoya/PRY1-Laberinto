@@ -18,12 +18,10 @@ def crearCaminoAleatorio(tamaño):
     matriz=crearMatrizNula(tamaño, tamaño)
     posX= random.randint(0, tamaño-1)
     posY= random.randint(0, tamaño-1)
-    posX=0
-    posY=2
     limite = determinarTotalEspacios(tamaño)
      
     while limite!=0:
-    #posX>0 and posY>0 and posX<tamaño and posY<tamaño
+
         if matriz[posX][posY]==0:
             matriz[posX][posY]=1
             limite -= 1
