@@ -6,9 +6,18 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import Laberintos
 
 def main(page: ft.Page):
+    page.window.maximized = True
 
-    matriz = Laberintos.crearCaminoAleatorio(15)
-    print(matriz)
+    dd = ft.Dropdown(
+        width=150,
+        options=[
+            ft.dropdown.Option("5x5"),
+            ft.dropdown.Option("10x10"),
+            ft.dropdown.Option("15x15"),
+            ft.dropdown.Option("20x20"),
+            ft.dropdown.Option("25x25"),
+        ],
+    )
     
     def generarTabla(matriz):
         tabla = []
@@ -33,13 +42,22 @@ def main(page: ft.Page):
             tabla.append(ft.Column([ ft.Text(""), column]))
         return tabla
     
-    page.add(
-        ft.Row(
-            controls=generarTabla(matriz),
-            spacing=0,  # Espacio entre columnas
-            alignment=ft.MainAxisAlignment.START
-        )
+    dd.value = "5x5"
+    matriz = Laberintos.crearCaminoAleatorio(int(dd.value.split("x")[0]))
+    tabla_controls = ft.Row(
+        controls=generarTabla(matriz),
+        spacing=0,
+        alignment=ft.MainAxisAlignment.START
     )
+
+    def actualizarTabla(e):
+        matriz = Laberintos.crearCaminoAleatorio(int(dd.value.split("x")[0]))
+        tabla_controls.controls = generarTabla(matriz)
+        page.update()
+    
+    dd.on_change = actualizarTabla
+    page.add(dd)
+    page.add(tabla_controls)
 
 
 ft.app(main)
