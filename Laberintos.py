@@ -32,7 +32,5 @@ def crearCaminoAleatorio(tamaño):
         else:
             posY-=1
     return matriz
-
-print(crearCaminoAleatorio(15))
         
     
