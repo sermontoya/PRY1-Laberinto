@@ -24,18 +24,15 @@ def main(page: ft.Page):
         for fila in matriz:
             items = []
             for i in fila:
-                color = ft.Colors.BLUE
+                img = "bosque1.jpg"
                 if i == 1:
-                    color = ft.Colors.WHITE
+                    img = "camino1.jpg"
                 items.append(
-                    ft.Container(
-                        content=ft.Text(value=""),
-                        #content=ft.Text(value=str(i)),
-                        alignment=ft.alignment.center,
+                    ft.Image(
+                        src=img,
                         width=40,
                         height=40,
-                        bgcolor=color,
-                        border_radius=ft.border_radius.all(0),
+                        fit=ft.ImageFit.FILL
                     )
                 )
             column = ft.Column(spacing=0, controls=items)
@@ -60,4 +57,4 @@ def main(page: ft.Page):
     page.add(tabla_controls)
 
 
-ft.app(main)
+ft.app(main, assets_dir="assets")
