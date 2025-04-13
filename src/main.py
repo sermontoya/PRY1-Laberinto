@@ -31,8 +31,8 @@ def main(page: ft.Page):
                 items.append(
                     ft.Image(
                         src=img,
-                        width=40,
-                        height=40,
+                        width=30,
+                        height=30,
                         fit=ft.ImageFit.FILL
                     )
                 )

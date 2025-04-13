@@ -44,7 +44,7 @@ def crearMatrizNula(filas, columnas):
 def crearCaminoAleatorio(tamano):
     mejorMatriz=[]
     cantUnosMejorMatriz=-1
-    for i in range(1):
+    for i in range(10):
         matriz=crearMatrizNula(tamano, tamano)
         limite = determinarTotalEspacios(tamano) 
         matriz[0][0]=1
@@ -68,13 +68,14 @@ def crearCaminoAleatorio(tamano):
 
 def crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite):
     if limite==0:
-        return matriz 
+        return True 
     if matriz[posX][posY]!=0:
         return False
     
     matriz[posX][posY]=1
     limite -= 1
     
+    #0 que viene de izquierda, 1 que viene de derecha, 2 que viene de arriba, 3 que viene de abajo
     listaAux=[0, 1, 2, 3]
     random.shuffle(listaAux)
     for aux in listaAux:
@@ -89,11 +90,10 @@ def crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite):
         elif aux == 3:
             nuevaY += 1
         if comprobarPosicionValida(tamano, nuevaX, nuevaY) and comprobarAlrededores(matriz, nuevaX, nuevaY, aux):
-            if crearCaminoAleatorio_aux(tamano, matriz, nuevaX, nuevaY, limite - 1):
+            if crearCaminoAleatorio_aux(tamano, matriz, nuevaX, nuevaY, limite):
                 return True
-    #0 que viene de izquierda, 1 que viene de derecha, 2 que viene de arriba, 3 que viene de abajo
-    matriz[posX][posY]=0
-
+    #matriz[posX][posY]=0
+    
     return False
     """if anterior==0:
         return crearCaminoAleatorio_aux(tamano, matriz, posX-1, posY, limite, 1)
@@ -106,13 +106,15 @@ def crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite):
 
 def determinarTotalEspacios(tamano):
     if tamano ==5:
-        limite= random.randint(10, 15)
+        limite= random.randint(15, 20)
     elif tamano ==10:
-        limite= random.randint(40, 60)
+        limite= random.randint(60, 75)
     elif tamano ==15:
         limite= random.randint(160, 180)
-    else:
+    elif tamano ==20:
         limite= random.randint(320, 340)
+    else:
+        limite= random.randint(540, 580)
     return limite
 
 def comprobarPosicionValida(tamano, x, y):
