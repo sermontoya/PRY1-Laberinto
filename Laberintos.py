@@ -42,39 +42,67 @@ def crearMatrizNula(filas, columnas):
     return matriz
 """
 def crearCaminoAleatorio(tamano):
-    matriz=crearMatrizNula(tamano, tamano)
-    limite = determinarTotalEspacios(tamano) 
-    posX=0
-    posY=0
-    return crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite, 0)
+    mejorMatriz=[]
+    cantUnosMejorMatriz=-1
+    for i in range(1):
+        matriz=crearMatrizNula(tamano, tamano)
+        limite = determinarTotalEspacios(tamano) 
+        matriz[0][0]=1
+        aux= random.randint(0, 1)
+        if aux==0:
+            posX=1
+            posY=0
+        else:
+            posX=0
+            posY=1
+            aux=2
+        matrizTemporal=matriz 
+        if crearCaminoAleatorio_aux(tamano, matrizTemporal, posX, posY, limite-1):
+            return matrizTemporal
+        cantidadUnos = cantUnos(matrizTemporal)
+        if cantidadUnos > cantUnosMejorMatriz:
+            cantUnosMejorMatriz = cantidadUnos
+            mejorMatriz = matrizTemporal
+    return mejorMatriz
+    
 
-def crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite, anterior):
+def crearCaminoAleatorio_aux(tamano, matriz, posX, posY, limite):
     if limite==0:
         return matriz 
-    if matriz[posX][posY]==0:
-        matriz[posX][posY]=1
-        limite -= 1
-    aux= random.randint(0, 3)
-    if aux==0 and comprobarPosicionValida(tamano, posX-1, posY) and comprobarAlrededores(matriz, posX-1, posY, aux):
-       return crearCaminoAleatorio_aux(tamano, matriz, posX-1, posY, limite, 1)
-    elif aux==1 and comprobarPosicionValida(tamano, posX+1, posY) and comprobarAlrededores(matriz, posX+1, posY, aux):  
-        return crearCaminoAleatorio_aux(tamano, matriz, posX+1, posY, limite, 0)
-    elif aux==2 and comprobarPosicionValida(tamano, posX, posY-1) and comprobarAlrededores(matriz, posX, posY-1, aux):
-        return crearCaminoAleatorio_aux(tamano, matriz, posX, posY-1, limite, 3)
-    elif aux==3 and comprobarPosicionValida(tamano, posX, posY+1) and comprobarAlrededores(matriz, posX, posY+1, aux):
-        return crearCaminoAleatorio_aux(tamano, matriz, posX, posY+1, limite, 2)
-    else:
+    if matriz[posX][posY]!=0:
+        return False
+    
+    matriz[posX][posY]=1
+    limite -= 1
+    
+    listaAux=[0, 1, 2, 3]
+    random.shuffle(listaAux)
+    for aux in listaAux:
+        nuevaX = posX
+        nuevaY= posY
+        if aux == 0:
+            nuevaX -= 1
+        elif aux == 1:
+            nuevaX += 1
+        elif aux == 2:
+            nuevaY -= 1
+        elif aux == 3:
+            nuevaY += 1
+        if comprobarPosicionValida(tamano, nuevaX, nuevaY) and comprobarAlrededores(matriz, nuevaX, nuevaY, aux):
+            if crearCaminoAleatorio_aux(tamano, matriz, nuevaX, nuevaY, limite - 1):
+                return True
     #0 que viene de izquierda, 1 que viene de derecha, 2 que viene de arriba, 3 que viene de abajo
-        matriz[posX][posY]=0
-        limite += 1
-        if anterior==0:
-            return crearCaminoAleatorio_aux(tamano, matriz, posX-1, posY, limite, 1)
-        elif anterior==1:
-            return crearCaminoAleatorio_aux(tamano, matriz, posX+1, posY, limite, 0)
-        elif anterior==2:
-            return crearCaminoAleatorio_aux(tamano, matriz, posX, posY-1, limite, 3)
-        else:
-            return crearCaminoAleatorio_aux(tamano, matriz, posX, posY+1, limite, 2)
+    matriz[posX][posY]=0
+
+    return False
+    """if anterior==0:
+        return crearCaminoAleatorio_aux(tamano, matriz, posX-1, posY, limite, 1)
+    elif anterior==1:
+        return crearCaminoAleatorio_aux(tamano, matriz, posX+1, posY, limite, 0)
+    elif anterior==2:
+        return crearCaminoAleatorio_aux(tamano, matriz, posX, posY-1, limite, 3)
+    else:
+        return crearCaminoAleatorio_aux(tamano, matriz, posX, posY+1, limite, 2)"""
 
 def determinarTotalEspacios(tamano):
     if tamano ==5:
@@ -104,3 +132,11 @@ def comprobarAlrededores(matriz, x, y, aux):
         elif comprobarPosicionValida(len(matriz), x+1, y) and matriz[x+1][y]==1:
             return False
     return True
+
+def cantUnos(matriz):
+    resultado=0
+    for i in matriz:
+        for j in i:
+            if j==1:
+                resultado+=1
+    return resultado
