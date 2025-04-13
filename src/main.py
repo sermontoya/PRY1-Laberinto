@@ -8,6 +8,11 @@ import Laberintos
 def main(page: ft.Page):
     page.window.maximized = True
 
+    global matriz, tiene_inicio, tiene_final
+    tiene_inicio = False
+    tiene_final = False
+    matriz = []
+
     selectorDimensiones = ft.Dropdown(
         width=150,
         options=[
@@ -19,25 +24,70 @@ def main(page: ft.Page):
         ],
         text_size=16
     )
+
+    def clickImagen(e, x, y):
+        global tiene_inicio, tiene_final
+        if matriz[x][y] == 1:
+            if tiene_inicio != True:
+                matriz[x][y] = 2
+                tiene_inicio = True
+                actualizarTabla(e, False)
+            elif tiene_final != True:
+                matriz[x][y] = 3
+                tiene_final = True
+                actualizarTabla(e, False)
     
+    def eventoClickImagen(e):
+        x, y = e.control.data
+        clickImagen(e, x, y)
+
     def generarTabla(matriz):
         tabla = []
+        cont_i = 0
+        cont_j = 0
         for fila in matriz:
             items = []
             for i in fila:
                 img = "bosque1.jpg"
                 if i == 1:
                     img = "camino1.jpg"
-                items.append(
-                    ft.Image(
+                elif i == 2:
+                    img = "inicio.jpg"
+                elif i == 3:
+                    img = "final.jpg"
+
+                w = 32
+                h = 32
+                if len(matriz) == 5:
+                    w = 65
+                    h = 65
+                elif len(matriz) == 10:
+                    w = 50
+                    h = 50
+                elif len(matriz) == 15:
+                    w = 45
+                    h = 45
+                elif len(matriz) == 20:
+                    w = 40
+                    h = 40
+                imagen = ft.Image(
                         src=img,
-                        width=30,
-                        height=30,
+                        width=w,
+                        height=h,
                         fit=ft.ImageFit.FILL
                     )
+                imagen = ft.GestureDetector(
+                    content=imagen,
+                    on_tap=eventoClickImagen
                 )
+                imagen.data = (cont_i, cont_j)
+                items.append(imagen)
+                cont_j += 1
+            
             column = ft.Column(spacing=0, controls=items)
             tabla.append(ft.Column([ ft.Text(""), column]))
+            cont_i += 1
+            cont_j = 0
         return tabla
     
     selectorDimensiones.value = "5x5"
@@ -48,8 +98,13 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER
     )
 
-    def actualizarTabla(e):
-        matriz = Laberintos.crearCaminoAleatorio(int(selectorDimensiones.value.split("x")[0]))
+    def actualizarTabla(e, generar=True):
+        global matriz
+        if generar:
+            global tiene_inicio, tiene_final
+            matriz = Laberintos.crearCaminoAleatorio(int(selectorDimensiones.value.split("x")[0]))
+            tiene_inicio = False
+            tiene_final = False
         tabla_controls.controls = generarTabla(matriz)
         page.update()
     
