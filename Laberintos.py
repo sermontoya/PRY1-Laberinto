@@ -1,4 +1,5 @@
 import random
+import copy
 def crearMatrizNula(filas, columnas):
     matriz=[]
     temp=[]
@@ -42,6 +43,7 @@ def crearMatrizNula(filas, columnas):
     return matriz
 """
 def crearCaminoAleatorio(tamano):
+    
     mejorMatriz=[]
     cantUnosMejorMatriz=-1
     for i in range(10):
@@ -144,15 +146,14 @@ def cantUnos(matriz):
     return resultado
 
 def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
-    print("buscando...")
     mejorSolucion=[]
     cantPasosMejorMatriz=100
     tamano=len(matriz)
     for i in range(100): 
-        matrizTemporal=matriz 
+        matrizTemporal=copy.deepcopy(matriz)
         if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY):
             cantidadPasos = cantCuatros(matrizTemporal)
-            if cantidadPasos < cantPasosMejorMatriz:
+            if cantidadPasos < cantPasosMejorMatriz and cantidadPasos > 0:
                 cantPasosMejorMatriz = cantidadPasos
                 mejorSolucion = matrizTemporal
     if mejorSolucion==[]:
@@ -161,31 +162,37 @@ def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
 
 
 def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY):
-    if posX==finX and posY==finY:
-            return True 
-    if matriz[posX][posY]==0:
-            return False
-    if matriz[posX][posY]!=2:
-        matriz[posX][posY]=4
-    
-    #0 que viene de izquierda, 1 que viene de derecha, 2 que viene de arriba, 3 que viene de abajo
-    listaAux=[0, 1, 2, 3]
+    if posX == finX and posY == finY:
+        return True
+
+    temp = matriz[posX][posY]
+
+    if temp==0 or temp==3 or temp==4 or temp==5:
+        return False
+
+    if temp != 2:
+        matriz[posX][posY] = 4 
+
+    listaAux = [0, 1, 2, 3]
     random.shuffle(listaAux)
     for aux in listaAux:
         nuevaX = posX
-        nuevaY= posY
-        if aux == 0:
+        nuevaY = posY
+        if aux == 0: 
             nuevaX -= 1
-        elif aux == 1:
+        elif aux == 1: 
             nuevaX += 1
-        elif aux == 2:
+        elif aux == 2: 
             nuevaY -= 1
-        elif aux == 3:
+        elif aux == 3: 
             nuevaY += 1
         if comprobarPosicionValida(tamano, nuevaX, nuevaY):
             if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY):
                 return True
-    matriz[posX][posY]=1
+
+    if temp != 2:
+        matriz[posX][posY] = 5  # Backtrack
+
     return False
 
 

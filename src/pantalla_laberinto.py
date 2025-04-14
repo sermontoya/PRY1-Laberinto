@@ -59,7 +59,7 @@ def pantalla_laberinto(page: ft.Page):
             items = []
             for i in fila:
                 img = "bosque1.jpg"
-                if i == 1:
+                if i == 1 or i == 5:
                     img = "camino1.jpg"
                 elif i == 2:
                     img = "inicio.jpg"
@@ -126,12 +126,7 @@ def pantalla_laberinto(page: ft.Page):
 
     def resolverLaberinto(e):
         global matriz
-        print("resolviendo...")
-        print("Matriz previa", matriz)
-        print("Inicio:", inicio)
-        print("Final:", final)
         matriz = Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1])
-        print("Resultado", matriz)
         if not isinstance(matriz, int):
             actualizarTabla(e, False)
 
