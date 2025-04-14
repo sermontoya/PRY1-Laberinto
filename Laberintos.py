@@ -144,10 +144,11 @@ def cantUnos(matriz):
     return resultado
 
 def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
+    print("buscando...")
     mejorSolucion=[]
     cantPasosMejorMatriz=100
     tamano=len(matriz)
-    for i in range(2): 
+    for i in range(100): 
         matrizTemporal=matriz 
         if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY):
             cantidadPasos = cantCuatros(matrizTemporal)
@@ -162,9 +163,10 @@ def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
 def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY):
     if posX==finX and posY==finY:
             return True 
-    if matriz[posX][posY]!=1:
+    if matriz[posX][posY]==0:
             return False
-    matriz[posX][posY]=4
+    if matriz[posX][posY]!=2:
+        matriz[posX][posY]=4
     
     #0 que viene de izquierda, 1 que viene de derecha, 2 que viene de arriba, 3 que viene de abajo
     listaAux=[0, 1, 2, 3]
@@ -195,6 +197,7 @@ def cantCuatros(matriz):
                 resultado+=1
     return resultado
 
+"""
 matriz=[[1,1,1,1,1],
         [0,1,0,0,1],
         [0,1,0,0,1],
@@ -202,3 +205,4 @@ matriz=[[1,1,1,1,1],
         [1,0,1,1,1]]
 print(solucionarLaberinto(matriz, 1, 0, 4, 4))
 
+"""

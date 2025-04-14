@@ -14,10 +14,12 @@ def setDimension(tamano):
 def pantalla_laberinto(page: ft.Page):
     page.window.maximized = True
 
-    global matriz, tiene_inicio, tiene_final, dimension
+    global matriz, tiene_inicio, tiene_final, dimension, inicio, final
     tiene_inicio = False
     tiene_final = False
     matriz = []
+    inicio = [0, 0]
+    final = [1, 1]
 
     """
     selectorDimensiones = ft.Dropdown(
@@ -49,6 +51,7 @@ def pantalla_laberinto(page: ft.Page):
         clickImagen(e, x, y)
 
     def generarTabla(matriz):
+        global inicio, final
         tabla = []
         cont_i = 0
         cont_j = 0
@@ -60,8 +63,12 @@ def pantalla_laberinto(page: ft.Page):
                     img = "camino1.jpg"
                 elif i == 2:
                     img = "inicio.jpg"
+                    inicio = [cont_i, cont_j]
                 elif i == 3:
                     img = "final.jpg"
+                    final = [cont_i, cont_j]
+                elif i == 4:
+                    img = "camino_recorrido.jpg"
 
                 w = 32
                 h = 32
@@ -117,6 +124,17 @@ def pantalla_laberinto(page: ft.Page):
     
     #selectorDimensiones.on_change = actualizarTabla
 
+    def resolverLaberinto(e):
+        global matriz
+        print("resolviendo...")
+        print("Matriz previa", matriz)
+        print("Inicio:", inicio)
+        print("Final:", final)
+        matriz = Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1])
+        print("Resultado", matriz)
+        if not isinstance(matriz, int):
+            actualizarTabla(e, False)
+
     laberinto =ft.Column(
         controls=[
             #ft.Container(
@@ -137,16 +155,33 @@ def pantalla_laberinto(page: ft.Page):
         controls=[
             laberinto,
             ft.Container(
-                content=ft.FilledButton('Volver', 
-                    icon=ft.Icons.ARROW_BACK, 
-                    on_click=lambda e: page.go('/dimensiones'),
-                    scale=3,
-                    bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
-                    color=ft.Colors.WHITE, 
-                    icon_color=ft.Colors.WHITE,
-                    style=ft.ButtonStyle(
-                        text_style=ft.TextStyle(font_family='Jersey 25', size=14)
-                    ),
+                content=ft.Row(
+                    controls=[
+                        ft.FilledButton('Volver', 
+                            icon=ft.Icons.ARROW_BACK, 
+                            on_click=lambda e: page.go('/dimensiones'),
+                            scale=3,
+                            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
+                            color=ft.Colors.WHITE, 
+                            icon_color=ft.Colors.WHITE,
+                            style=ft.ButtonStyle(
+                                text_style=ft.TextStyle(font_family='Jersey 25', size=14)
+                            )
+                        ),
+                        ft.FilledButton('Resolver', 
+                            icon=ft.Icons.CHECK, 
+                            on_click=resolverLaberinto,
+                            scale=3,
+                            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
+                            color=ft.Colors.WHITE, 
+                            icon_color=ft.Colors.WHITE,
+                            style=ft.ButtonStyle(
+                                text_style=ft.TextStyle(font_family='Jersey 25', size=14)
+                            )
+                        )
+                    ],
+                    spacing=250,
+                    alignment=ft.MainAxisAlignment.CENTER
                 ),
                 alignment=ft.alignment.bottom_center,
                 padding=50,
