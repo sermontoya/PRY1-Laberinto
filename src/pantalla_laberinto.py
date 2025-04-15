@@ -215,10 +215,12 @@ def pantalla_laberinto(page: ft.Page):
             matriz = Laberintos.solucionOptima(lista_soluciones)
 
             index = lista_soluciones.index(matriz)
-            if index != 0:
-                temp = lista_soluciones[index]
-                lista_soluciones[index] = lista_soluciones[0]
-                lista_soluciones[0] = temp
+            lista_soluciones = Laberintos.ordenarSoluciones(lista_soluciones)
+            pasos = Laberintos.getTotalPasos()[index]
+            #if index != 0:
+            #    temp = lista_soluciones[index]
+            #    lista_soluciones[index] = lista_soluciones[0]
+            #    lista_soluciones[0] = temp
 
             for i in range(len(lista_soluciones)):
                 icono = ft.Icons.CHECK
@@ -242,13 +244,17 @@ def pantalla_laberinto(page: ft.Page):
             seleccion_actual[0] = listView_soluciones.controls[0]
             seleccion_actual[0].bgcolor = ft.Colors.with_opacity(1, '#182C61')
             listView_soluciones.update()
-
-            for paso in Laberintos.obtenerPasos(matriz):
+            recorridos = []
+            for paso in pasos:#Laberintos.obtenerPasos(matriz):
                 img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
-                img.content.src = "camino_recorrido.jpg"
+                if paso in recorridos:
+                    img.content.src = "camino1.jpg"
+                else:
+                    img.content.src = "camino_recorrido.jpg"
+                recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
-            
+            actualizarTabla(e, False)
 
             #if not isinstance(matriz, int):
             #    actualizarTabla(e, False)
