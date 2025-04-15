@@ -125,25 +125,31 @@ def pantalla_laberinto(page: ft.Page):
     #selectorDimensiones.on_change = actualizarTabla
 
     def resolverLaberinto(e):
-        global matriz
-        matriz = Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1])
-        if not isinstance(matriz, int):
-            actualizarTabla(e, False)
-
-    laberinto =ft.Column(
-        controls=[
-            #ft.Container(
-            #    content=selectorDimensiones, 
-            #    alignment=ft.alignment.top_center
-            #),
-            ft.Container(
-                content=tabla_controls, 
-                alignment=ft.alignment.center,
-                expand=True
+        global matriz, tiene_inicio, tiene_final
+        if tiene_inicio == False or tiene_final == False:
+            
+            dialogo_error = ft.AlertDialog(
+                modal=True,
+                title=ft.Row([
+                    ft.Icon(name=ft.icons.ERROR, color=ft.Colors.RED),
+                    ft.Text("Error"),
+                ], spacing=10),
+                content=ft.Text("Debe seleccionar un punto de inicio y fin."),
+                actions_alignment=ft.MainAxisAlignment.END,
             )
-        ],
-        scroll=ft.ScrollMode.AUTO,
-    )
+            def cerrar(e):
+                dialogo_error.open = False
+                page.update()
+
+            dialogo_error.actions =[ft.TextButton("Aceptar", on_click=cerrar)]
+            page.overlay.append(dialogo_error)
+            dialogo_error.open = True
+            page.update()
+
+        else:
+            matriz = Laberintos.solucionOptima(Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1]))
+            if not isinstance(matriz, int):
+                actualizarTabla(e, False)
 
     def confirmarVolver(e):   
         def close_dlg(e):
@@ -169,6 +175,67 @@ def pantalla_laberinto(page: ft.Page):
         page.overlay.append(dlg_modal)
         dlg_modal.open = True
         page.update()
+    
+
+    seleccion_actual = [None]
+
+    def on_click(e):
+        if seleccion_actual[0] and seleccion_actual[0] != e.control:
+            seleccion_actual[0].bgcolor = ft.Colors.with_opacity(0.5, '#182C61')
+            seleccion_actual[0].update()
+
+        e.control.bgcolor = ft.Colors.with_opacity(1, '#182C61')
+        seleccion_actual[0] = e.control
+        e.control.update()
+
+    lista = ft.ListView(
+        spacing=5,
+        padding=5,
+        width=170,
+        height=500,
+        auto_scroll=False
+    )
+
+    for i in range(25):
+        icono = ft.Icons.CHECK
+        texto = f"Solución {i+1}"
+        if i == 0:
+            icono = ft.Icons.STAR
+            texto = "Mejor solución"
+        item = ft.Container(
+            content=ft.Row([
+                ft.Icon(icono, ft.Colors.WHITE),
+                ft.Text(texto, size=16, color=ft.Colors.WHITE, font_family='Jersey 25'),
+            ]),
+            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'),
+            border_radius=10,
+            padding=10,
+            on_click=on_click
+        )
+        lista.controls.append(item)
+
+    laberinto =ft.Column(
+        controls=[
+            #ft.Container(
+            #    content=selectorDimensiones, 
+            #    alignment=ft.alignment.top_center
+            #),
+            ft.Row(
+                controls=[
+                    ft.Container(width=170),
+                    ft.Container(
+                        content=tabla_controls, 
+                        alignment=ft.alignment.center,
+                        expand=True
+                    ),
+                    ft.Container(content=lista, alignment=ft.alignment.center_right)
+                ],
+                alignment=ft.MainAxisAlignment.START
+            )
+            
+        ],
+        scroll=ft.ScrollMode.AUTO,
+    )
 
     return ft.View(
         route="/laberinto",
