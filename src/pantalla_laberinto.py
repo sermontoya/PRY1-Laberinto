@@ -36,6 +36,7 @@ def cargarMatriz(ruta):
         file.close()
     except Exception as e:
         return e
+
 def pantalla_laberinto(page: ft.Page):
     page.window.maximized = True
     file_picker = ft.FilePicker()
@@ -50,20 +51,6 @@ def pantalla_laberinto(page: ft.Page):
     inicio = [0, 0]
     final = [1, 1]
     modoActual = ""
-
-    """
-    selectorDimensiones = ft.Dropdown(
-        width=150,
-        options=[
-            ft.dropdown.Option("5x5"),
-            ft.dropdown.Option("10x10"),
-            ft.dropdown.Option("15x15"),
-            ft.dropdown.Option("20x20"),
-            ft.dropdown.Option("25x25"),
-        ],
-        text_size=16
-    )
-    """
 
     listView_soluciones = ft.ListView(
         spacing=5,
@@ -170,8 +157,6 @@ def pantalla_laberinto(page: ft.Page):
             tiene_final = False
         tabla_controls.controls = generarTabla(matriz)
         page.update()
-    
-    #selectorDimensiones.on_change = actualizarTabla
 
     def on_click_solucion(e):
         global matriz, lista_soluciones
@@ -270,10 +255,6 @@ def pantalla_laberinto(page: ft.Page):
 
     laberinto =ft.Column(
         controls=[
-            #ft.Container(
-            #    content=selectorDimensiones, 
-            #    alignment=ft.alignment.top_center
-            #),
             ft.Row(
                 controls=[
                     ft.Container(width=170),
@@ -288,7 +269,7 @@ def pantalla_laberinto(page: ft.Page):
             )
             
         ],
-        scroll=ft.ScrollMode.ALWAYS,
+        scroll=ft.ScrollMode.AUTO,
     )
     
     def guardarSolucion(e):
@@ -326,6 +307,7 @@ def pantalla_laberinto(page: ft.Page):
                             )
                         ),
                         ft.FilledButton('Guardar',
+                            icon=ft.Icons.SAVE,
                             on_click=guardarSolucion,
                             scale=3, 
                             bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
@@ -341,9 +323,10 @@ def pantalla_laberinto(page: ft.Page):
                 ),
                 alignment=ft.alignment.bottom_center,
                 padding=50,
-                expand=True
+                expand=True,
             ),
         ],
+        scroll=ft.ScrollMode.AUTO
     )
 
     
