@@ -1,3 +1,4 @@
+import csv
 import flet as ft
 import sys
 import os
@@ -11,16 +12,44 @@ def setDimension(tamano):
     global dimension
     dimension = tamano
 
+def guardarMatriz(matriz, ruta):
+
+    if not ruta.endswith(".csv"):
+        ruta+=".csv"
+    try:
+        file=open(ruta, "w", newline="")
+        writer=csv.writer(file, delimiter=";")
+        writer.writerows(matriz)
+        file.close()
+    except Exception as e:
+        return e
+
+def cargarMatriz(ruta):
+    global matriz, dimension
+    try:
+        file=open(ruta, "r")
+        reader=csv.reader(file, delimiter=";")
+        matriz = []
+        for row in reader:
+            for i in row:
+                matriz+= [int(i)]
+        file.close()
+    except Exception as e:
+        return e
 def pantalla_laberinto(page: ft.Page):
     page.window.maximized = True
+    file_picker = ft.FilePicker()
+    page.overlay.append(file_picker)
+    archivo = ft.Text()
 
-    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final
+    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual
     tiene_inicio = False
     tiene_final = False
     matriz = []
     lista_soluciones = []
     inicio = [0, 0]
     final = [1, 1]
+    modoActual = ""
 
     """
     selectorDimensiones = ft.Dropdown(
@@ -123,6 +152,14 @@ def pantalla_laberinto(page: ft.Page):
         spacing=0,
         alignment=ft.MainAxisAlignment.CENTER
     )
+
+    def on_file_result(e: ft.FilePickerResultEvent):
+        global modoActual
+        if modoActual=="guardar":
+            if e.path:
+                guardarMatriz(matriz, e.path)
+
+    file_picker.on_result = on_file_result
 
     def actualizarTabla(e, generar=True):
         global matriz
@@ -251,8 +288,13 @@ def pantalla_laberinto(page: ft.Page):
             )
             
         ],
-        scroll=ft.ScrollMode.AUTO,
+        scroll=ft.ScrollMode.ALWAYS,
     )
+    
+    def guardarSolucion(e):
+        global modoActual
+        modoActual = "guardar"
+        file_picker.save_file()
 
     return ft.View(
         route="/laberinto",
@@ -282,7 +324,17 @@ def pantalla_laberinto(page: ft.Page):
                             style=ft.ButtonStyle(
                                 text_style=ft.TextStyle(font_family='Jersey 25', size=14)
                             )
-                        )
+                        ),
+                        ft.FilledButton('Guardar',
+                            on_click=guardarSolucion,
+                            scale=3, 
+                            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
+                            color=ft.Colors.WHITE, 
+                            icon_color=ft.Colors.WHITE,
+                            style=ft.ButtonStyle(
+                                text_style=ft.TextStyle(font_family='Jersey 25', size=14)
+                            ))
+                        
                     ],
                     spacing=250,
                     alignment=ft.MainAxisAlignment.CENTER
