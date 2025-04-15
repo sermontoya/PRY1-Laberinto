@@ -14,10 +14,11 @@ def setDimension(tamano):
 def pantalla_laberinto(page: ft.Page):
     page.window.maximized = True
 
-    global matriz, tiene_inicio, tiene_final, dimension, inicio, final
+    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final
     tiene_inicio = False
     tiene_final = False
     matriz = []
+    lista_soluciones = []
     inicio = [0, 0]
     final = [1, 1]
 
@@ -34,6 +35,17 @@ def pantalla_laberinto(page: ft.Page):
         text_size=16
     )
     """
+
+    listView_soluciones = ft.ListView(
+        spacing=5,
+        padding=5,
+        width=200,
+        height=750,
+        auto_scroll=False
+    )
+
+    seleccion_actual = [None]
+
     def clickImagen(e, x, y):
         global tiene_inicio, tiene_final
         if matriz[x][y] == 1:
@@ -124,8 +136,20 @@ def pantalla_laberinto(page: ft.Page):
     
     #selectorDimensiones.on_change = actualizarTabla
 
+    def on_click_solucion(e):
+        global matriz, lista_soluciones
+        if seleccion_actual[0] and seleccion_actual[0] != e.control:
+            seleccion_actual[0].bgcolor = ft.Colors.with_opacity(0.5, '#182C61')
+            seleccion_actual[0].update()
+
+        e.control.bgcolor = ft.Colors.with_opacity(1, '#182C61')
+        seleccion_actual[0] = e.control
+        e.control.update()
+        matriz = lista_soluciones[e.control.data]
+        actualizarTabla(e, False)
+
     def resolverLaberinto(e):
-        global matriz, tiene_inicio, tiene_final
+        global matriz, lista_soluciones, tiene_inicio, tiene_final
         if tiene_inicio == False or tiene_final == False:
             
             dialogo_error = ft.AlertDialog(
@@ -147,7 +171,38 @@ def pantalla_laberinto(page: ft.Page):
             page.update()
 
         else:
-            matriz = Laberintos.solucionOptima(Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1]))
+            lista_soluciones = Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1])
+            matriz = Laberintos.solucionOptima(lista_soluciones)
+
+            index = lista_soluciones.index(matriz)
+            if index != 0:
+                temp = lista_soluciones[index]
+                lista_soluciones[index] = lista_soluciones[0]
+                lista_soluciones[0] = temp
+
+            for i in range(len(lista_soluciones)):
+                icono = ft.Icons.CHECK
+                texto = f"Solución {i+1}"
+                if i == 0:
+                    icono = ft.Icons.STAR
+                    texto = "Mejor solución"
+                item = ft.Container(
+                    content=ft.Row([
+                        ft.Icon(icono, ft.Colors.WHITE),
+                        ft.Text(texto, size=16, color=ft.Colors.WHITE, font_family='Jersey 25'),
+                        ft.Text(f"({Laberintos.cantCuatros(lista_soluciones[i])})", size=16, color=ft.Colors.GREY, font_family='Jersey 25')
+                    ]),
+                    bgcolor=ft.Colors.with_opacity(0.5, '#182C61'),
+                    border_radius=10,
+                    padding=10,
+                    data=i,
+                    on_click=on_click_solucion
+                )
+                listView_soluciones.controls.append(item)
+            seleccion_actual[0] = listView_soluciones.controls[0]
+            seleccion_actual[0].bgcolor = ft.Colors.with_opacity(1, '#182C61')
+            listView_soluciones.update()
+
             if not isinstance(matriz, int):
                 actualizarTabla(e, False)
 
@@ -175,44 +230,6 @@ def pantalla_laberinto(page: ft.Page):
         page.overlay.append(dlg_modal)
         dlg_modal.open = True
         page.update()
-    
-
-    seleccion_actual = [None]
-
-    def on_click(e):
-        if seleccion_actual[0] and seleccion_actual[0] != e.control:
-            seleccion_actual[0].bgcolor = ft.Colors.with_opacity(0.5, '#182C61')
-            seleccion_actual[0].update()
-
-        e.control.bgcolor = ft.Colors.with_opacity(1, '#182C61')
-        seleccion_actual[0] = e.control
-        e.control.update()
-
-    lista = ft.ListView(
-        spacing=5,
-        padding=5,
-        width=170,
-        height=500,
-        auto_scroll=False
-    )
-
-    for i in range(25):
-        icono = ft.Icons.CHECK
-        texto = f"Solución {i+1}"
-        if i == 0:
-            icono = ft.Icons.STAR
-            texto = "Mejor solución"
-        item = ft.Container(
-            content=ft.Row([
-                ft.Icon(icono, ft.Colors.WHITE),
-                ft.Text(texto, size=16, color=ft.Colors.WHITE, font_family='Jersey 25'),
-            ]),
-            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'),
-            border_radius=10,
-            padding=10,
-            on_click=on_click
-        )
-        lista.controls.append(item)
 
     laberinto =ft.Column(
         controls=[
@@ -228,7 +245,7 @@ def pantalla_laberinto(page: ft.Page):
                         alignment=ft.alignment.center,
                         expand=True
                     ),
-                    ft.Container(content=lista, alignment=ft.alignment.center_right)
+                    ft.Container(content=listView_soluciones, alignment=ft.alignment.center_right)
                 ],
                 alignment=ft.MainAxisAlignment.START
             )

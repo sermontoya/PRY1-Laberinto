@@ -145,8 +145,21 @@ def cantUnos(matriz):
                 resultado+=1
     return resultado
 
+def ordenarSoluciones(soluciones):
+    if len(soluciones) <= 1:
+        return soluciones
+    pivote = soluciones[0]
+    menores = []
+    mayores = []
+    for i in range(1, len(soluciones)):
+        solucion = soluciones[i]
+        if cantCuatros(solucion) < cantCuatros(pivote):
+            menores.append(solucion)
+        else:
+            mayores.append(solucion)
+    return ordenarSoluciones(menores) + [pivote] + ordenarSoluciones(mayores)
+
 def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
-    print("\n")
     soluciones=[]
     cantPasosMejorMatriz=1000
     tamano=len(matriz)
@@ -166,7 +179,7 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
                 soluciones+=[matrizTemporal]
     if soluciones==[]:
         return -1
-    return soluciones
+    return ordenarSoluciones(soluciones)
 
 
 def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite):
@@ -205,7 +218,6 @@ def solucionOptima(listaMatrices):
     cantPasosMejorSolucion=cantCuatros(listaMatrices[0])
     mejorSolucion=listaMatrices[0]
     for matriz in listaMatrices:
-        print(cantPasosMejorSolucion)
         cantPasos=cantCuatros(matriz)
         if cantPasosMejorSolucion>cantPasos:
             cantPasosMejorSolucion=cantPasos
