@@ -174,7 +174,7 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
         intentos=150
     for i in range(intentos): 
         matrizTemporal=copy.deepcopy(matriz)
-        if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, cantPasosMejorMatriz):
+        if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, cantPasosMejorMatriz, -1):
             if matrizTemporal not in soluciones:
                 soluciones+=[matrizTemporal]
     if soluciones==[]:
@@ -182,7 +182,7 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     return ordenarSoluciones(soluciones)
 
 
-def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite):
+def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite, anterior):
     if posX == finX and posY == finY:
         return True
     
@@ -199,16 +199,16 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
     for aux in listaAux:
         nuevaX = posX
         nuevaY = posY
-        if aux == 0: 
+        if aux == 0: #and anterior != 1: 
             nuevaX -= 1
-        elif aux == 1: 
+        elif aux == 1: #and anterior != 0: 
             nuevaX += 1
-        elif aux == 2: 
+        elif aux == 2: #and anterior != 3: 
             nuevaY -= 1
-        elif aux == 3: 
+        elif aux == 3: #and anterior != 2: 
             nuevaY += 1
         if comprobarPosicionValida(tamano, nuevaX, nuevaY):
-            if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite):
+            if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite, aux):
                 return True
     if temp != 2:
         matriz[posX][posY] = 5 
@@ -244,3 +244,5 @@ cantidadPasos = cantCuatros(matrizTemporal)
 logica para obtener el mejor camino
 
 """
+
+

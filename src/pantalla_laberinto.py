@@ -30,9 +30,12 @@ def cargarMatriz(ruta):
         file=open(ruta, "r")
         reader=csv.reader(file, delimiter=";")
         matriz = []
+        temp=[]
         for row in reader:
             for i in row:
-                matriz+= [int(i)]
+                temp+= [int(i)]
+            matriz+=[temp]
+            temp=[]
         file.close()
     except Exception as e:
         return e
@@ -147,6 +150,18 @@ def pantalla_laberinto(page: ft.Page):
         if modoActual=="guardar":
             if e.path:
                 guardarMatriz(matriz, e.path)
+        else:
+            if e.files:
+                if e.files[0].path:
+                    cargarMatriz(e.files[0].path)
+                    print(matriz)
+                    global dimension
+                    dimension = str(len(matriz)) + "x" + str(len(matriz))
+                    tabla_controls.controls = generarTabla(matriz)
+                    page.update()
+                else:
+                    archivo.value = "No se seleccionó ningún archivo."
+                
 
     file_picker.on_result = on_file_result
 
@@ -278,6 +293,11 @@ def pantalla_laberinto(page: ft.Page):
         global modoActual
         modoActual = "guardar"
         file_picker.save_file(allowed_extensions=["csv"], initial_directory=documentos)
+        
+    def cargarSolucion(e):
+        global modoActual
+        modoActual = "cargar"
+        file_picker.pick_files(initial_directory=documentos, allowed_extensions=["csv"], allow_multiple=False)
 
     return ft.View(
         route="/laberinto",
@@ -321,7 +341,7 @@ def pantalla_laberinto(page: ft.Page):
                         ),
                         ft.FilledButton('Cargar',
                             icon=ft.Icons.UPLOAD_FILE_OUTLINED,
-                            on_click=cargarMatriz,
+                            on_click=cargarSolucion,
                             scale=3, 
                             bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
                             color=ft.Colors.WHITE, 
