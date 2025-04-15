@@ -3,7 +3,7 @@ import flet as ft
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+from pathlib import Path
 import Laberintos
 
 dimension = "5x5"
@@ -42,8 +42,9 @@ def pantalla_laberinto(page: ft.Page):
     file_picker = ft.FilePicker()
     page.overlay.append(file_picker)
     archivo = ft.Text()
-
-    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual
+    
+    
+    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos
     tiene_inicio = False
     tiene_final = False
     matriz = []
@@ -51,7 +52,8 @@ def pantalla_laberinto(page: ft.Page):
     inicio = [0, 0]
     final = [1, 1]
     modoActual = ""
-
+    documentos = Path.home() / "Documents"
+    
     listView_soluciones = ft.ListView(
         spacing=5,
         padding=5,
@@ -275,7 +277,7 @@ def pantalla_laberinto(page: ft.Page):
     def guardarSolucion(e):
         global modoActual
         modoActual = "guardar"
-        file_picker.save_file()
+        file_picker.save_file(allowed_extensions=["csv"], initial_directory=documentos)
 
     return ft.View(
         route="/laberinto",
@@ -315,11 +317,24 @@ def pantalla_laberinto(page: ft.Page):
                             icon_color=ft.Colors.WHITE,
                             style=ft.ButtonStyle(
                                 text_style=ft.TextStyle(font_family='Jersey 25', size=14)
-                            ))
+                            )
+                        ),
+                        ft.FilledButton('Cargar',
+                            icon=ft.Icons.UPLOAD_FILE_OUTLINED,
+                            on_click=cargarMatriz,
+                            scale=3, 
+                            bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
+                            color=ft.Colors.WHITE, 
+                            icon_color=ft.Colors.WHITE,
+                            style=ft.ButtonStyle(
+                                text_style=ft.TextStyle(font_family='Jersey 25', size=14)
+                            )
+                        )
                         
                     ],
                     spacing=250,
-                    alignment=ft.MainAxisAlignment.CENTER
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    expand=True
                 ),
                 alignment=ft.alignment.bottom_center,
                 padding=50,
@@ -327,6 +342,6 @@ def pantalla_laberinto(page: ft.Page):
             ),
         ],
         scroll=ft.ScrollMode.AUTO
-    )
+)
 
     
