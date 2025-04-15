@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from pathlib import Path
 import Laberintos
+import time
 
 dimension = "5x5"
 
@@ -242,8 +243,15 @@ def pantalla_laberinto(page: ft.Page):
             seleccion_actual[0].bgcolor = ft.Colors.with_opacity(1, '#182C61')
             listView_soluciones.update()
 
-            if not isinstance(matriz, int):
-                actualizarTabla(e, False)
+            for paso in Laberintos.obtenerPasos(matriz):
+                img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
+                img.content.src = "camino_recorrido.jpg"
+                page.update()
+                time.sleep(0.3)
+            
+
+            #if not isinstance(matriz, int):
+            #    actualizarTabla(e, False)
 
     def confirmarVolver(e):   
         def close_dlg(e):

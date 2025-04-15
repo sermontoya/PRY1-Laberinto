@@ -233,6 +233,89 @@ def cantCuatros(matriz):
                 resultado+=1
     return resultado
 
+def obtenerPasos(matriz):
+    coordenada_inicio = [0, 0]
+    coordenada_final = [0, 0]
+    coordenadas = []
+    visitadas = []
+    for i in range(len(matriz)):
+        for j in range(len(matriz[0])):
+            if matriz[i][j]==2:
+                coordenada_inicio = [i, j]
+            elif matriz[i][j]==3:
+                coordenada_final = [i, j]
+
+    n = 0
+    encontrado = False
+    while encontrado == False:
+        
+        arriba = 0
+        abajo = 0
+        derecha = 0
+        izquierda = 0
+
+        i = coordenada_inicio[0]
+        j = coordenada_inicio[1]
+
+        if i != 0:
+            arriba = matriz[i-1][j]
+        if i != len(matriz)-1:
+            abajo = matriz[i+1][j]
+        if j != 0:
+            derecha = matriz[i][j-1]
+        if j != len(matriz[0])-1:
+            izquierda = matriz[i][j+1]
+
+        """
+        print("coordenada", i, j)
+        print("arriba:", arriba)
+        print("abajo:", abajo)
+        print("derecha:", derecha)
+        print("izquierda:", izquierda)
+        print("\n")
+        """
+
+        if arriba == 3 or abajo == 3 or derecha == 3 or izquierda == 3 or n == 30:
+            encontrado = True
+        
+        if arriba == 4:
+            if [i-1, j] not in coordenadas:
+                i-=1
+                coordenada_inicio = [i, j]
+                coordenadas.append([i, j])
+                continue  
+        if abajo == 4:
+            if [i+1, j] not in coordenadas:
+                i+=1
+                coordenada_inicio = [i, j]
+                coordenadas.append([i, j])
+                continue  
+        if derecha == 4:
+            if [i, j-1] not in coordenadas:
+                j-=1
+                coordenada_inicio = [i, j]
+                coordenadas.append([i, j])
+                continue  
+        if izquierda == 4:
+            if [i, j+1] not in coordenadas:
+                j+=1
+                coordenada_inicio = [i, j]
+                coordenadas.append([i, j])
+                continue  
+
+    return coordenadas
+        
+matriz = [
+        [2, 0, 0, 0, 0],
+        [4, 4, 0, 0, 0],
+        [0, 4, 4, 0, 0],
+        [0, 0, 4, 4, 0],
+        [0, 0, 0, 4, 3],
+    ]
+
+print(obtenerPasos(matriz))
+
+
 
 """
 cantidadPasos = cantCuatros(matrizTemporal)
