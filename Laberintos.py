@@ -145,14 +145,25 @@ def cantUnos(matriz):
                 resultado+=1
     return resultado
 
-def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
+def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
+    print("\n")
     mejorSolucion=[]
-    cantPasosMejorMatriz=100
+    cantPasosMejorMatriz=1000
     tamano=len(matriz)
-    for i in range(100): 
+    intentos=10
+    if tamano==10:
+        intentos=20
+    elif tamano==15:
+        intentos=50
+    elif tamano==20:
+        intentos=100
+    elif tamano==25:
+        intentos=150
+    for i in range(intentos): 
         matrizTemporal=copy.deepcopy(matriz)
-        if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY):
+        if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, cantPasosMejorMatriz):
             cantidadPasos = cantCuatros(matrizTemporal)
+            print(cantidadPasos)
             if cantidadPasos < cantPasosMejorMatriz and cantidadPasos > 0:
                 cantPasosMejorMatriz = cantidadPasos
                 mejorSolucion = matrizTemporal
@@ -161,17 +172,20 @@ def solucionarLaberinto(matriz, inicioX,inicioY, finX, finY):
     return mejorSolucion
 
 
-def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY):
+def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite):
     if posX == finX and posY == finY:
         return True
-
-    temp = matriz[posX][posY]
-
-    if temp==0 or temp==3 or temp==4 or temp==5:
+    
+    if cuatros == limite:
         return False
 
-    if temp != 2:
+    temp = matriz[posX][posY]
+    
+    if temp!=1 and temp!=2:
+        return False
+    if temp != 2 and temp != 5:
         matriz[posX][posY] = 4 
+        cuatros += 1
 
     listaAux = [0, 1, 2, 3]
     random.shuffle(listaAux)
@@ -187,12 +201,10 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
         elif aux == 3: 
             nuevaY += 1
         if comprobarPosicionValida(tamano, nuevaX, nuevaY):
-            if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY):
+            if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite):
                 return True
-
     if temp != 2:
-        matriz[posX][posY] = 5  # Backtrack
-
+        matriz[posX][posY] = 5 
     return False
 
 
@@ -203,13 +215,3 @@ def cantCuatros(matriz):
             if j==4:
                 resultado+=1
     return resultado
-
-"""
-matriz=[[1,1,1,1,1],
-        [0,1,0,0,1],
-        [0,1,0,0,1],
-        [1,1,1,0,1],
-        [1,0,1,1,1]]
-print(solucionarLaberinto(matriz, 1, 0, 4, 4))
-
-"""

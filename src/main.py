@@ -1,6 +1,8 @@
 import flet as ft
 from pantalla_laberinto import pantalla_laberinto, setDimension
 
+dimensionCache = "5x5"
+
 def main(page: ft.Page):
     page.window.maximized = True
     page.title = 'Laberinto limonense'
@@ -26,10 +28,12 @@ def main(page: ft.Page):
             text_style=ft.TextStyle(font_family='Jersey 25', size=14),
         )
 
-        dimensiones_dropdown.value = '5x5'
+        dimensiones_dropdown.value = dimensionCache
 
         def goLaberinto(e):
+            global dimensionCache
             setDimension(dimensiones_dropdown.value)
+            dimensionCache= dimensiones_dropdown.value
             page.go('/laberinto')
 
 
@@ -236,7 +240,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.FloatingActionButton(
-                                        icon=ft.icons.ARROW_BACK,
+                                        icon=ft.Icons.ARROW_BACK,
                                         on_click=lambda _: page.go('/'),
                                         bgcolor=ft.Colors.with_opacity(0.5, '#182C61'),
                                         shape=ft.CircleBorder(),

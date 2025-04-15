@@ -145,6 +145,31 @@ def pantalla_laberinto(page: ft.Page):
         scroll=ft.ScrollMode.AUTO,
     )
 
+    def confirmarVolver(e):   
+        def close_dlg(e):
+            dlg_modal.open = False
+            page.update()
+
+        def volver(e):
+            dlg_modal.open = False
+            page.update()
+            page.go('/dimensiones')
+        
+        dlg_modal = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Salir del laberinto"),
+            content=ft.Text("¿Desea salir del laberinto?"),
+            actions=[
+                ft.TextButton("Sí", on_click=volver),
+                ft.TextButton("No", on_click=close_dlg),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        page.overlay.append(dlg_modal)
+        dlg_modal.open = True
+        page.update()
+
     return ft.View(
         route="/laberinto",
         controls=[
@@ -154,7 +179,7 @@ def pantalla_laberinto(page: ft.Page):
                     controls=[
                         ft.FilledButton('Volver', 
                             icon=ft.Icons.ARROW_BACK, 
-                            on_click=lambda e: page.go('/dimensiones'),
+                            on_click=confirmarVolver,
                             scale=3,
                             bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
                             color=ft.Colors.WHITE, 
