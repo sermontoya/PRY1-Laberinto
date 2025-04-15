@@ -162,7 +162,8 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     for i in range(intentos): 
         matrizTemporal=copy.deepcopy(matriz)
         if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, cantPasosMejorMatriz):
-            soluciones+=[matrizTemporal]
+            if matrizTemporal not in soluciones:
+                soluciones+=[matrizTemporal]
     if soluciones==[]:
         return -1
     return soluciones
@@ -200,6 +201,17 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
         matriz[posX][posY] = 5 
     return False
 
+def solucionOptima(listaMatrices):
+    cantPasosMejorSolucion=cantCuatros(listaMatrices[0])
+    mejorSolucion=listaMatrices[0]
+    for matriz in listaMatrices:
+        print(cantPasosMejorSolucion)
+        cantPasos=cantCuatros(matriz)
+        if cantPasosMejorSolucion>cantPasos:
+            cantPasosMejorSolucion=cantPasos
+            mejorSolucion=matriz
+    return mejorSolucion
+        
 
 def cantCuatros(matriz):
     resultado=0
