@@ -49,7 +49,7 @@ def crearCaminoAleatorio(tamano):
     for i in range(10):
         matriz=crearMatrizNula(tamano, tamano)
         limite = determinarTotalEspacios(tamano) 
-        matriz[0][0]=1
+        """matriz[0][0]=1
         aux= random.randint(0, 1)
         if aux==0:
             posX=1
@@ -57,7 +57,23 @@ def crearCaminoAleatorio(tamano):
         else:
             posX=0
             posY=1
-            aux=2
+            aux=2"""
+        posX= 0
+        posY= random.randint(0, tamano-1)
+        matriz[posX][posY]=1
+        aux= random.randint(0, 3)
+        if aux==0 and comprobarPosicionValida(tamano, posX-1, posY):
+            if comprobarAlrededores(matriz, posX-1, posY, aux):
+                posX-=1     
+        elif aux==1 and comprobarPosicionValida(tamano, posX+1, posY):
+            if comprobarAlrededores(matriz, posX+1, posY, aux):
+                posX+=1
+        elif aux==2 and comprobarPosicionValida(tamano, posX, posY+1):
+            if comprobarAlrededores(matriz, posX, posY+1, aux):
+                posY+=1
+        elif aux==3 and comprobarPosicionValida(tamano, posX, posY-1):
+            if comprobarAlrededores(matriz, posX, posY-1, aux):
+                posY-=1
         matrizTemporal=matriz 
         if crearCaminoAleatorio_aux(tamano, matrizTemporal, posX, posY, limite-1):
             return matrizTemporal
