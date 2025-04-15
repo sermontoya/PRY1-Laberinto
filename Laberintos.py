@@ -147,7 +147,7 @@ def cantUnos(matriz):
 
 def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     print("\n")
-    mejorSolucion=[]
+    soluciones=[]
     cantPasosMejorMatriz=1000
     tamano=len(matriz)
     intentos=10
@@ -162,23 +162,16 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     for i in range(intentos): 
         matrizTemporal=copy.deepcopy(matriz)
         if solucionarLaberinto_aux(tamano, matrizTemporal, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, cantPasosMejorMatriz):
-            cantidadPasos = cantCuatros(matrizTemporal)
-            print(cantidadPasos)
-            if cantidadPasos < cantPasosMejorMatriz and cantidadPasos > 0:
-                cantPasosMejorMatriz = cantidadPasos
-                mejorSolucion = matrizTemporal
-    if mejorSolucion==[]:
+            soluciones+=[matrizTemporal]
+    if soluciones==[]:
         return -1
-    return mejorSolucion
+    return soluciones
 
 
 def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite):
     if posX == finX and posY == finY:
         return True
     
-    if cuatros == limite:
-        return False
-
     temp = matriz[posX][posY]
     
     if temp!=1 and temp!=2:
@@ -215,3 +208,15 @@ def cantCuatros(matriz):
             if j==4:
                 resultado+=1
     return resultado
+
+
+"""
+cantidadPasos = cantCuatros(matrizTemporal)
+            print(cantidadPasos)
+            if cantidadPasos < cantPasosMejorMatriz and cantidadPasos > 0:
+                cantPasosMejorMatriz = cantidadPasos
+                mejorSolucion = matrizTemporal
+                
+logica para obtener el mejor camino
+
+"""
