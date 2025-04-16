@@ -215,6 +215,7 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     tamano=len(matriz)
     global soluciones
     soluciones=[]
+    total_pasos=[]
     solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, 1000, [], None)
     if soluciones==[]:
         return -1
@@ -224,8 +225,10 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
     global soluciones, total_pasos
 
     if posX == finX and posY == finY:
-        soluciones.append(copy.deepcopy(matriz))
-        total_pasos.append(copy.deepcopy(pasos))
+        if matriz not in soluciones:
+            soluciones.append(copy.deepcopy(matriz))
+            total_pasos.append(copy.deepcopy(pasos))
+        pasos = []
         return False  # Para que siga buscando más soluciones
 
     temp = matriz[posX][posY]
