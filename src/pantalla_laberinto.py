@@ -9,10 +9,33 @@ import time
 import copy
 
 dimension = "5x5"
+mostrarMensajesError1 = True
+mostrarMensajesError2 = True
 
 def setDimension(tamano):
     global dimension
     dimension = tamano
+
+def desactivarMensajesError(e, codigo):
+    global mostrarMensajesError1, mostrarMensajesError2
+    if codigo == 1:
+        mostrarMensajesError1 = False
+    elif codigo == 2:
+        mostrarMensajesError2 = False
+    snackbar = ft.SnackBar(
+        content=ft.Text(
+            "De acuerdo, no se mostrará más el mensaje.",
+            color=ft.Colors.WHITE, 
+            font_family='Jersey 25', 
+            size=20
+        ),
+        duration=2000,
+        bgcolor=ft.Colors.BLACK
+    )
+    e.control.page.overlay.append(snackbar)
+    snackbar.open = True
+    e.control.page.update()
+
 
 def guardarMatriz(matriz, ruta):
 
@@ -82,7 +105,34 @@ def pantalla_laberinto(page: ft.Page, modo):
             elif tiene_final != True:
                 matriz[x][y] = 3
                 tiene_final = True
-                matriz_jugable = copy.deepcopy(matriz)
+                
+                if modo == "manual":
+                    matriz_jugable = copy.deepcopy(matriz)
+                    if mostrarMensajesError2:
+                        snackbar = ft.SnackBar(
+                            content=ft.Row(
+                                controls=[
+                                    ft.Text("Para jugar, presione las flechas de dirección de su teclado.", color=ft.Colors.WHITE, font_family='Jersey 25', size=20),
+                                    ft.Container(content=ft.TextButton(
+                                        'No volver a mostrar', 
+                                        style=ft.ButtonStyle(
+                                            color=ft.Colors.GREY, 
+                                            text_style=ft.TextStyle(font_family='Jersey 25', size=20)
+                                        ), 
+                                        scale=1, 
+                                        on_click=lambda e: desactivarMensajesError(e, 2)), 
+                                        alignment=ft.alignment.bottom_right, 
+                                        expand=True
+                                    )
+                                ]
+                            ),
+                            duration=4000,
+                            bgcolor=ft.Colors.BLACK
+                        )
+                        e.control.page.overlay.append(snackbar)
+                        snackbar.open = True
+                        e.control.page.update()
+
                 actualizarTabla(e, False)
     
     def eventoClickImagen(e):
@@ -201,16 +251,16 @@ def pantalla_laberinto(page: ft.Page, modo):
                 modal=True,
                 title=ft.Row([
                     ft.Icon(name=ft.icons.ERROR, color=ft.Colors.RED),
-                    ft.Text("Error"),
+                    ft.Text("Error", font_family='Jersey 25', size=26),
                 ], spacing=10),
-                content=ft.Text("Debe seleccionar un punto de inicio y fin."),
-                actions_alignment=ft.MainAxisAlignment.END,
+                content=ft.Text("Debe seleccionar un punto de inicio y fin.", font_family='Jersey 25', size=18),
+                actions_alignment=ft.MainAxisAlignment.END
             )
             def cerrar(e):
                 dialogo_error.open = False
                 page.update()
 
-            dialogo_error.actions =[ft.TextButton("Aceptar", on_click=cerrar)]
+            dialogo_error.actions =[ft.TextButton("Aceptar", style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)), on_click=cerrar)]
             page.overlay.append(dialogo_error)
             dialogo_error.open = True
             page.update()
@@ -282,11 +332,11 @@ def pantalla_laberinto(page: ft.Page, modo):
         
         dlg_modal = ft.AlertDialog(
             modal=True,
-            title=ft.Text("Salir del laberinto"),
-            content=ft.Text("¿Desea salir del laberinto?"),
+            title=ft.Text("Salir del laberinto", font_family='Jersey 25', size=26),
+            content=ft.Text("¿Desea salir del laberinto?", font_family='Jersey 25', size=18),
             actions=[
-                ft.TextButton("Sí", on_click=volver),
-                ft.TextButton("No", on_click=close_dlg),
+                ft.TextButton("Sí", on_click=volver, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))),
+                ft.TextButton("No", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
@@ -367,7 +417,31 @@ def pantalla_laberinto(page: ft.Page, modo):
                 #for i in matriz_jugable:
                 #    print(i)
                 #print("\n")
-
+            else:
+                if mostrarMensajesError1:
+                    snackbar = ft.SnackBar(
+                        content=ft.Row(
+                            controls=[
+                                ft.Text("Para jugar, debe elegir un punto de inicio y final primero.", color=ft.Colors.WHITE, font_family='Jersey 25', size=20),
+                                ft.Container(content=ft.TextButton(
+                                    'No volver a mostrar', 
+                                    style=ft.ButtonStyle(
+                                        color=ft.Colors.GREY, 
+                                        text_style=ft.TextStyle(font_family='Jersey 25', size=20)
+                                    ), 
+                                    scale=1, 
+                                    on_click=lambda e: desactivarMensajesError(e, 1)), 
+                                    alignment=ft.alignment.bottom_right,
+                                    expand=True
+                                )
+                            ]
+                        ),
+                        duration=4000,
+                        bgcolor=ft.Colors.BLACK,
+                    )
+                    page.overlay.append(snackbar)
+                    snackbar.open = True
+                    page.update()
         page.on_keyboard_event = on_keyboard
 
     return ft.View(
