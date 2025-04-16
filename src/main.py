@@ -2,6 +2,7 @@ import flet as ft
 from pantalla_laberinto import pantalla_laberinto, setDimension
 
 dimensionCache = "5x5"
+modoCache = "auto"
 
 def main(page: ft.Page):
     page.window.maximized = True
@@ -33,9 +34,16 @@ def main(page: ft.Page):
         def goLaberinto(e):
             global dimensionCache
             setDimension(dimensiones_dropdown.value)
-            dimensionCache= dimensiones_dropdown.value
-            page.go('/laberinto')
-
+            dimensionCache = dimensiones_dropdown.value
+            if modoCache == "manual":
+                page.go('/laberinto_manual')
+            else:
+                page.go('/laberinto_auto')
+        
+        def setModo(modo):
+            global modoCache
+            modoCache = modo
+            page.go('/dimensiones')
 
         page.views.append(
             ft.View(
@@ -103,7 +111,7 @@ def main(page: ft.Page):
                                     controls=[
                                         ft.FilledButton('Automático', 
                                             icon=ft.Icons.GAMEPAD, 
-                                            on_click=lambda e: page.go('/dimensiones'), 
+                                            on_click=lambda e: setModo("auto"), 
                                             scale=3.5, 
                                             bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
                                             color=ft.Colors.WHITE, 
@@ -114,7 +122,7 @@ def main(page: ft.Page):
                                         ),
                                         ft.FilledButton('Manual  ', 
                                             icon=ft.Icons.MOUSE, 
-                                            on_click=lambda e: page.go('/dimensiones'), 
+                                            on_click=lambda e: setModo("manual"), 
                                             scale=3.5, 
                                             bgcolor=ft.Colors.with_opacity(0.5, '#182C61'), 
                                             color=ft.Colors.WHITE, 
@@ -198,8 +206,11 @@ def main(page: ft.Page):
                 )
             )
         
-        elif page.route == "/laberinto":
-            page.views.append(pantalla_laberinto(page))
+        elif page.route == "/laberinto_auto":
+            page.views.append(pantalla_laberinto(page, "auto"))
+
+        elif page.route == "/laberinto_manual":
+            page.views.append(pantalla_laberinto(page, "manual"))
 
         elif page.route == "/creditos":
             page.views.append(

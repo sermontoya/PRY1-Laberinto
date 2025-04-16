@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from pathlib import Path
 import Laberintos
 import time
+import copy
 
 dimension = "5x5"
 
@@ -26,7 +27,7 @@ def guardarMatriz(matriz, ruta):
         return e
 
 def cargarMatriz(ruta):
-    global matriz, dimension
+    global matriz, dimension, matriz_jugable
     try:
         file=open(ruta, "r")
         reader=csv.reader(file, delimiter=";")
@@ -37,24 +38,27 @@ def cargarMatriz(ruta):
                 temp+= [int(i)]
             matriz+=[temp]
             temp=[]
+        matriz_jugable = copy.deepcopy(matriz)
         file.close()
     except Exception as e:
         return e
 
-def pantalla_laberinto(page: ft.Page):
+def pantalla_laberinto(page: ft.Page, modo):
     page.window.maximized = True
     file_picker = ft.FilePicker()
     page.overlay.append(file_picker)
     archivo = ft.Text()
     
     
-    global matriz, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos
+    global matriz, matriz_jugable, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos, posicion_jugador
     tiene_inicio = False
     tiene_final = False
     matriz = []
+    matriz_jugable = []
     lista_soluciones = []
     inicio = [0, 0]
     final = [1, 1]
+    posicion_jugador = None
     modoActual = ""
     documentos = Path.home() / "Documents"
     
@@ -69,7 +73,7 @@ def pantalla_laberinto(page: ft.Page):
     seleccion_actual = [None]
 
     def clickImagen(e, x, y):
-        global tiene_inicio, tiene_final
+        global tiene_inicio, tiene_final, matriz_jugable
         if matriz[x][y] == 1:
             if tiene_inicio != True:
                 matriz[x][y] = 2
@@ -78,6 +82,7 @@ def pantalla_laberinto(page: ft.Page):
             elif tiene_final != True:
                 matriz[x][y] = 3
                 tiene_final = True
+                matriz_jugable = copy.deepcopy(matriz)
                 actualizarTabla(e, False)
     
     def eventoClickImagen(e):
@@ -250,12 +255,12 @@ def pantalla_laberinto(page: ft.Page):
                 antimg = None
                 if pasos.index(paso) != 0:
                     antimg = tabla_controls.controls[recorridos[pasos.index(paso)-1][0]].controls[1].controls[recorridos[pasos.index(paso)-1][1]]
-                if paso in recorridos:
-                    img.content.src = "camino1.jpg"
-                else:
-                    if antimg != None:
-                        antimg.content.src = "camino_recorrido.jpg"
-                    img.content.src = "jugador.jpg"
+                #if paso in recorridos:
+                #    img.content.src = "camino1.jpg"
+                #else:
+                if antimg != None:
+                    antimg.content.src = "camino_recorrido.jpg"
+                img.content.src = "jugador.jpg"
                 recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
@@ -271,6 +276,7 @@ def pantalla_laberinto(page: ft.Page):
 
         def volver(e):
             dlg_modal.open = False
+            page.on_keyboard_event = None
             page.update()
             page.go('/dimensiones')
         
@@ -318,8 +324,54 @@ def pantalla_laberinto(page: ft.Page):
         modoActual = "cargar"
         file_picker.pick_files(initial_directory=documentos, allowed_extensions=["csv"], allow_multiple=False)
 
+    if modo == "manual":
+        def on_keyboard(e: ft.KeyboardEvent):
+            global matriz_jugable, posicion_jugador
+            #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")
+
+            if tiene_inicio and tiene_final:
+                if posicion_jugador == None:
+                    posicion_jugador = inicio
+                
+                pos_anterior = copy.deepcopy(posicion_jugador)
+
+                if e.key == "Arrow Right":
+                    if posicion_jugador[0] + 1 < len(matriz_jugable) and matriz_jugable[posicion_jugador[0]+1][posicion_jugador[1]] == 1:
+                        matriz_jugable[posicion_jugador[0]+1][posicion_jugador[1]] = 4
+                        posicion_jugador[0] += 1
+                    
+                elif e.key == "Arrow Left":
+                    if posicion_jugador[0] - 1 >= 0 and matriz_jugable[posicion_jugador[0]-1][posicion_jugador[1]] == 1:
+                        matriz_jugable[posicion_jugador[0]-1][posicion_jugador[1]] = 4
+                        posicion_jugador[0] -= 1
+                    
+                elif e.key == "Arrow Up":
+                    if posicion_jugador[1] - 1 >= 0 and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]-1] == 1:
+                        matriz_jugable[posicion_jugador[0]][posicion_jugador[1]-1] = 4
+                        posicion_jugador[1] -= 1
+
+                elif e.key == "Arrow Down":
+                    if posicion_jugador[1] + 1 < len(matriz_jugable[0]) and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]+1] == 1:
+                        matriz_jugable[posicion_jugador[0]][posicion_jugador[1]+1] = 4
+                        posicion_jugador[1] += 1
+
+                if e.key in ["Arrow Right", "Arrow Left", "Arrow Up", "Arrow Down"]:
+                    if pos_anterior != posicion_jugador:
+                        imgant = tabla_controls.controls[pos_anterior[0]].controls[1].controls[pos_anterior[1]]
+                        if imgant.content.src != "inicio.jpg":
+                            imgant.content.src = "camino_recorrido.jpg"
+                        img = tabla_controls.controls[posicion_jugador[0]].controls[1].controls[posicion_jugador[1]]
+                        img.content.src = "jugador.jpg"
+                        page.update()
+
+                #for i in matriz_jugable:
+                #    print(i)
+                #print("\n")
+
+        page.on_keyboard_event = on_keyboard
+
     return ft.View(
-        route="/laberinto",
+        route="/laberinto_" + modo,
         controls=[
             laberinto,
             ft.Container(
