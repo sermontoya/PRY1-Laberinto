@@ -247,10 +247,15 @@ def pantalla_laberinto(page: ft.Page):
             recorridos = []
             for paso in pasos:#Laberintos.obtenerPasos(matriz):
                 img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
+                antimg = None
+                if pasos.index(paso) != 0:
+                    antimg = tabla_controls.controls[recorridos[pasos.index(paso)-1][0]].controls[1].controls[recorridos[pasos.index(paso)-1][1]]
                 if paso in recorridos:
                     img.content.src = "camino1.jpg"
                 else:
-                    img.content.src = "camino_recorrido.jpg"
+                    if antimg != None:
+                        antimg.content.src = "camino_recorrido.jpg"
+                    img.content.src = "jugador.jpg"
                 recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
