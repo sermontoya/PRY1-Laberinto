@@ -183,7 +183,7 @@ def getTotalPasos():
     total_pasos = []
     return t
 
-def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
+"""def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     global total_pasos
     soluciones=[]
     cantPasosMejorMatriz=1000
@@ -208,17 +208,33 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
         return -1
     print(total_pasos)
     return soluciones
+"""
 
-def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite, pasos):
+def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
+    global total_pasos
+    tamano=len(matriz)
+    global soluciones
+    soluciones=[]
+    solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, 1000, [], None)
+    if soluciones==[]:
+        return -1
+    return soluciones
+
+def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite, pasos, anterior):
+    global soluciones, total_pasos
+
     if posX == finX and posY == finY:
-        return True
-    
+        soluciones.append(copy.deepcopy(matriz))
+        total_pasos.append(copy.deepcopy(pasos))
+        return False  # Para que siga buscando más soluciones
+
     temp = matriz[posX][posY]
-    
-    if temp!=1 and temp!=2:
+
+    if temp != 1 and temp != 2:
         return False
+
     if temp != 2 and temp != 5:
-        matriz[posX][posY] = 4 
+        matriz[posX][posY] = 4
         cuatros += 1
         pasos.append([posX, posY])
 
@@ -227,20 +243,27 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
     for aux in listaAux:
         nuevaX = posX
         nuevaY = posY
-        if aux == 0: #and anterior != 1: 
+        if aux == 0:
             nuevaX -= 1
-        elif aux == 1: #and anterior != 0: 
+        elif aux == 1:
             nuevaX += 1
-        elif aux == 2: #and anterior != 3: 
+        elif aux == 2:
             nuevaY -= 1
-        elif aux == 3: #and anterior != 2: 
+        elif aux == 3:
             nuevaY += 1
         if comprobarPosicionValida(tamano, nuevaX, nuevaY):
-            if solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite, pasos):
-                return True
+            if solucionarLaberinto_aux(tamano, copy.deepcopy(matriz), inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite, pasos, aux):
+                pass  # Ya no salimos del ciclo aquí
+
     if temp != 2:
-        matriz[posX][posY] = 5 
-    return False
+        matriz[posX][posY] = 5
+        if pasos:
+            pasos.pop()
+
+    return False  # Nunca se detiene al encontrar una solución, se exploran todas
+
+
+
 
 def solucionOptima(listaMatrices):
     cantPasosMejorSolucion=cantCuatros(listaMatrices[0])
@@ -252,6 +275,17 @@ def solucionOptima(listaMatrices):
             mejorSolucion=matriz
     return mejorSolucion
         
+def comprobarMeta(matriz, posX, posY):
+    tamano=len(matriz)
+    if comprobarPosicionValida(tamano, posX-1, posY) and matriz[posX-1][posY] == 3:
+        return 0
+    elif comprobarPosicionValida(tamano, posX+1, posY) and matriz[posX+1][posY] == 3:
+        return 1
+    elif comprobarPosicionValida(tamano, posX, posY-1) and matriz[posX][posY-1] == 3:
+        return 2
+    elif comprobarPosicionValida(tamano, posX, posY+1) and matriz[posX][posY+1] == 3:
+        return 3
+    return -1
 
 def cantCuatros(matriz):
     resultado=0
@@ -335,13 +369,16 @@ def obtenerPasos(matriz):
         
 matriz = [
         [2, 0, 0, 0, 0],
-        [4, 4, 0, 0, 0],
-        [0, 4, 4, 0, 0],
-        [0, 0, 4, 4, 0],
-        [0, 0, 0, 4, 3],
+        [1, 1, 0, 0, 0],
+        [1, 1, 1, 0, 0],
+        [1, 0, 1, 1, 0],
+        [1, 1, 1, 1, 3],
     ]
 
-print(obtenerPasos(matriz))
+
+
+print(solucionarLaberinto(matriz, 0, 0, 4, 4))
+
 
 
 
