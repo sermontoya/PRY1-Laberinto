@@ -216,14 +216,22 @@ def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     global soluciones
     soluciones=[]
     total_pasos=[]
-    solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, 1000, [], None)
+    limite=15
+    if tamano==10:
+        limite=25
+    elif tamano==15:
+        limite=30
+    elif tamano==20:
+        limite=35
+    elif tamano==25:
+        limite=40
+    solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, inicioX, inicioY, 0, limite, [], None, True)
     if soluciones==[]:
         return -1
     return soluciones
 
-def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite, pasos, anterior):
+def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, posY, cuatros, limite, pasos, anterior, comprobar):
     global soluciones, total_pasos
-
     if posX == finX and posY == finY:
         if matriz not in soluciones:
             soluciones.append(copy.deepcopy(matriz))
@@ -232,9 +240,12 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
         return False  # Para que siga buscando más soluciones
 
     temp = matriz[posX][posY]
-
-    if temp != 1 and temp != 2:
+    if len(pasos) >= limite:
         return False
+    if temp != 1 and temp!=2: 
+            return False
+    if temp==2 and anterior!=None:
+        comprobar=False
 
     if temp != 2 and temp != 5:
         matriz[posX][posY] = 4
@@ -242,7 +253,7 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
         pasos.append([posX, posY])
 
     listaAux = [0, 1, 2, 3]
-    random.shuffle(listaAux)
+    #random.shuffle(listaAux)
     for aux in listaAux:
         nuevaX = posX
         nuevaY = posY
@@ -254,8 +265,8 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
             nuevaY -= 1
         elif aux == 3:
             nuevaY += 1
-        if comprobarPosicionValida(tamano, nuevaX, nuevaY):
-            if solucionarLaberinto_aux(tamano, copy.deepcopy(matriz), inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite, pasos, aux):
+        if comprobarPosicionValida(tamano, nuevaX, nuevaY) and comprobar:
+            if solucionarLaberinto_aux(tamano, copy.deepcopy(matriz), inicioX, inicioY, finX, finY, nuevaX, nuevaY, cuatros, limite, pasos, aux, comprobar):
                 pass  # Ya no salimos del ciclo aquí
 
     if temp != 2:
