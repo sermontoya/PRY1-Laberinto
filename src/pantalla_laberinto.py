@@ -266,15 +266,13 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.update()
 
         else:
-            lista_soluciones = Laberintos.solucionarLaberinto(matriz, inicio[0], inicio[1], final[0], final[1])
+            lista_soluciones = Laberintos.solucionarLaberinto(matriz)
             if lista_soluciones == -1:
                 return "ERROR"
             matriz = Laberintos.solucionOptima(lista_soluciones)
 
             index = lista_soluciones.index(matriz)
             lista_soluciones = Laberintos.ordenarSoluciones(lista_soluciones)
-            if len(lista_soluciones)>10:
-                lista_soluciones = lista_soluciones[:10]
             pasos = Laberintos.getTotalPasos()[index]
             #if index != 0:
             #    temp = lista_soluciones[index]

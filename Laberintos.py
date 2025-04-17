@@ -1,5 +1,7 @@
 import random
 import copy
+
+resultado=[]
 def crearMatrizNula(filas, columnas):
     matriz=[]
     temp=[]
@@ -210,6 +212,8 @@ def getTotalPasos():
     return soluciones
 """
 
+"""
+
 def solucionarLaberinto(matriz, inicioX, inicioY, finX, finY):
     global total_pasos
     tamano=len(matriz)
@@ -275,7 +279,60 @@ def solucionarLaberinto_aux(tamano, matriz, inicioX, inicioY, finX, finY, posX, 
             pasos.pop()
 
     return False  # Nunca se detiene al encontrar una solución, se exploran todas
+"""
 
+def solucionarLaberinto(matriz):
+    global resultado, total_pasos
+    total_pasos=[]
+    resultado=[]
+    x = 0
+    y = 0
+    for i in range(len(matriz)):
+        for j in range(len(matriz)):
+            if matriz[j][i] == 2:
+                x = j
+                y = i
+    solucionar_aux(matriz, x, y, [])
+    return resultado
+            
+def solucionar_aux(matriz, posX, posY, pasos):
+    global resultado, total_pasos
+    arriba, abajo, izquierda, derecha = 0, 0, 0, 0
+    if posY > 0:
+        arriba = matriz[posX][posY-1]
+    if posY < len(matriz)-1:
+        abajo = matriz[posX][posY+1]
+    if posX < len(matriz)-1:
+        derecha = matriz[posX+1][posY]
+    if posX > 0:
+        izquierda = matriz[posX-1][posY]
+        
+    simbolos = [arriba, abajo, izquierda, derecha]
+   
+    if matriz[posX][posY] != 2:
+        matriz[posX][posY] = 4
+    
+    if 3 in simbolos:
+        if matriz not in resultado:
+            resultado.append(copy.deepcopy(matriz))
+            total_pasos.append(copy.deepcopy(pasos))
+        pasos = []
+        return True
+        
+    if 1 not in simbolos:
+        matriz[posX][posY] = 5
+        if pasos:
+            pasos.pop()
+        return False
+    pasos.append([posX, posY])
+    if arriba == 1:
+        solucionar_aux(copy.deepcopy(matriz), posX, posY-1, pasos)
+    if abajo == 1:
+        solucionar_aux(copy.deepcopy(matriz), posX, posY+1, pasos)
+    if izquierda == 1:
+        solucionar_aux(copy.deepcopy(matriz), posX-1, posY, pasos)
+    if derecha == 1:
+        solucionar_aux(copy.deepcopy(matriz), posX+1, posY, pasos)
 
 
 
@@ -391,7 +448,7 @@ matriz = [
 
 
 
-print(solucionarLaberinto(matriz, 0, 0, 4, 4))
+#print(solucionarLaberinto(matriz, 0, 0, 4, 4))
 
 
 
