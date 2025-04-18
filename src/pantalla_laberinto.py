@@ -194,7 +194,11 @@ def pantalla_laberinto(page: ft.Page, modo):
         return tabla
 
     #selectorDimensiones.value = "5x5"
-    matriz = Laberintos.crearCaminoAleatorio(int(dimension.split("x")[0]))
+    if modo == "manual":
+        temp= 0
+    else:
+        temp = 1
+    matriz = Laberintos.crearCaminosAleatorios(int(dimension.split("x")[0]), temp)
     tabla_controls = ft.Row(
         controls=generarTabla(matriz),
         spacing=0,
