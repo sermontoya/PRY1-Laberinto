@@ -421,13 +421,15 @@ def solucionar_aux(matriz, posX, posY, pasos):
             total_pasos.append(copy.deepcopy(pasos))
         pasos = []
         return True
-        
+    
+    #pasos = copy.deepcopy(pasos)
+    pasos.append([posX, posY])
     if 1 not in simbolos:
         matriz[posX][posY] = 5
-        if pasos:
-            pasos.pop()
+        #if pasos:
+        #    pasos.pop()
         return False
-    pasos.append([posX, posY])
+    
     if arriba == 1:
         solucionar_aux(copy.deepcopy(matriz), posX, posY-1, pasos)
     if abajo == 1:

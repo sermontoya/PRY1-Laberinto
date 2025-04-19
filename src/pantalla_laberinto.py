@@ -75,7 +75,7 @@ def pantalla_laberinto(page: ft.Page, modo):
     
     global matriz, matriz_jugable, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos, posicion_jugador
     tiene_inicio = False
-    tiene_final = False
+    tiene_final = True
     matriz = []
     matriz_jugable = []
     lista_soluciones = []
@@ -101,10 +101,6 @@ def pantalla_laberinto(page: ft.Page, modo):
             if tiene_inicio != True:
                 matriz[x][y] = 2
                 tiene_inicio = True
-                actualizarTabla(e, False)
-            elif tiene_final != True:
-                matriz[x][y] = 3
-                tiene_final = True
                 
                 if modo == "manual":
                     matriz_jugable = copy.deepcopy(matriz)
@@ -132,8 +128,13 @@ def pantalla_laberinto(page: ft.Page, modo):
                         e.control.page.overlay.append(snackbar)
                         snackbar.open = True
                         e.control.page.update()
-
+                    
                 actualizarTabla(e, False)
+                #elif tiene_final != True:
+                    #   matriz[x][y] = 3
+                    #   tiene_final = True
+
+                #actualizarTabla(e, False)
     
     def eventoClickImagen(e):
         x, y = e.control.data
@@ -257,7 +258,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     ft.Icon(name=ft.icons.ERROR, color=ft.Colors.RED),
                     ft.Text("Error", font_family='Jersey 25', size=26),
                 ], spacing=10),
-                content=ft.Text("Debe seleccionar un punto de inicio y fin.", font_family='Jersey 25', size=18),
+                content=ft.Text("Debe seleccionar un punto de inicio.", font_family='Jersey 25', size=18),
                 actions_alignment=ft.MainAxisAlignment.END
             )
             def cerrar(e):
