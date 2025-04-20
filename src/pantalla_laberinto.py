@@ -380,6 +380,8 @@ def pantalla_laberinto(page: ft.Page, modo):
             snackbar.open = True
             page.update()
 
+        mispasos = []
+
         def on_keyboard(e: ft.KeyboardEvent):
             global matriz_jugable, posicion_jugador
             #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")
@@ -390,33 +392,52 @@ def pantalla_laberinto(page: ft.Page, modo):
                 
                 pos_anterior = copy.deepcopy(posicion_jugador)
 
+                temp = 4
                 if e.key == "Arrow Right":
-                    if posicion_jugador[0] + 1 < len(matriz_jugable) and matriz_jugable[posicion_jugador[0]+1][posicion_jugador[1]] == 1:
-                        matriz_jugable[posicion_jugador[0]+1][posicion_jugador[1]] = 4
+                    if posicion_jugador[0] + 1 < len(matriz_jugable) and matriz_jugable[posicion_jugador[0]+1][posicion_jugador[1]] in [1, 2, 4]:
                         posicion_jugador[0] += 1
                     
                 elif e.key == "Arrow Left":
-                    if posicion_jugador[0] - 1 >= 0 and matriz_jugable[posicion_jugador[0]-1][posicion_jugador[1]] == 1:
-                        matriz_jugable[posicion_jugador[0]-1][posicion_jugador[1]] = 4
+                    if posicion_jugador[0] - 1 >= 0 and matriz_jugable[posicion_jugador[0]-1][posicion_jugador[1]] in [1, 2, 4]:
                         posicion_jugador[0] -= 1
                     
                 elif e.key == "Arrow Up":
-                    if posicion_jugador[1] - 1 >= 0 and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]-1] == 1:
-                        matriz_jugable[posicion_jugador[0]][posicion_jugador[1]-1] = 4
+                    if posicion_jugador[1] - 1 >= 0 and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]-1] in [1, 2, 4]:
                         posicion_jugador[1] -= 1
 
                 elif e.key == "Arrow Down":
-                    if posicion_jugador[1] + 1 < len(matriz_jugable[0]) and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]+1] == 1:
-                        matriz_jugable[posicion_jugador[0]][posicion_jugador[1]+1] = 4
+                    if posicion_jugador[1] + 1 < len(matriz_jugable[0]) and matriz_jugable[posicion_jugador[0]][posicion_jugador[1]+1] in [1, 2, 4]:
                         posicion_jugador[1] += 1
 
                 if e.key in ["Arrow Right", "Arrow Left", "Arrow Up", "Arrow Down"]:
                     if pos_anterior != posicion_jugador:
                         imgant = tabla_controls.controls[pos_anterior[0]].controls[1].controls[pos_anterior[1]]
-                        if imgant.content.src != "inicio.jpg":
-                            imgant.content.src = "camino_recorrido.jpg"
+                        if 1==1:
+                            if mispasos != [] and posicion_jugador in mispasos and imgant.content.src != "inicio.jpg":
+                                imgant.content.src = "camino1.jpg"
+                                if mispasos[-1] == posicion_jugador:
+                                    matriz_jugable[mispasos[-1][0]][mispasos[-1][1]] = 1
+                                    mispasos.pop()
+                                else:
+                                    index = mispasos.index(posicion_jugador)
+                                    for i in range(index, len(mispasos)):
+                                        img = tabla_controls.controls[mispasos[i][0]].controls[1].controls[mispasos[i][1]]
+                                        if img.content.src != "inicio.jpg":
+                                            img.content.src = "camino1.jpg"
+                                            matriz_jugable[mispasos[i][0]][mispasos[i][1]] = 1
+                                    for i in range(index, len(mispasos)):
+                                        mispasos.pop()
+                            else:
+                                if imgant.content.src != "inicio.jpg":                 
+                                    imgant.content.src = "camino_recorrido.jpg"
+                                    matriz_jugable[pos_anterior[0]][pos_anterior[1]] = 4
+                                    mispasos.append(pos_anterior)
+                                else:
+                                    mispasos.append(pos_anterior)   
+                        
                         img = tabla_controls.controls[posicion_jugador[0]].controls[1].controls[posicion_jugador[1]]
-                        img.content.src = "jugador.jpg"
+                        if img.content.src != "inicio.jpg":
+                            img.content.src = "jugador.jpg"
                         page.update()
 
         page.on_keyboard_event = on_keyboard
