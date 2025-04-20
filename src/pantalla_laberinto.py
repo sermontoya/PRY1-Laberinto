@@ -128,7 +128,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                         e.control.page.overlay.append(snackbar)
                         snackbar.open = True
                         e.control.page.update()
-                    
+
                 actualizarTabla(e, False)
                 #elif tiene_final != True:
                     #   matriz[x][y] = 3
