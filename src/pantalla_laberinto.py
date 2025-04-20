@@ -10,18 +10,15 @@ import copy
 
 dimension = "5x5"
 mostrarMensajesError1 = True
-mostrarMensajesError2 = True
 
 def setDimension(tamano):
     global dimension
     dimension = tamano
 
 def desactivarMensajesError(e, codigo):
-    global mostrarMensajesError1, mostrarMensajesError2
+    global mostrarMensajesError1
     if codigo == 1:
         mostrarMensajesError1 = False
-    elif codigo == 2:
-        mostrarMensajesError2 = False
     snackbar = ft.SnackBar(
         content=ft.Text(
             "De acuerdo, no se mostrará más el mensaje.",
@@ -101,34 +98,6 @@ def pantalla_laberinto(page: ft.Page, modo):
             if tiene_inicio != True:
                 matriz[x][y] = 2
                 tiene_inicio = True
-                
-                if modo == "manual":
-                    matriz_jugable = copy.deepcopy(matriz)
-                    if mostrarMensajesError2:
-                        snackbar = ft.SnackBar(
-                            content=ft.Row(
-                                controls=[
-                                    ft.Text("Para jugar, presione las flechas de dirección de su teclado.", color=ft.Colors.WHITE, font_family='Jersey 25', size=20),
-                                    ft.Container(content=ft.TextButton(
-                                        'No volver a mostrar', 
-                                        style=ft.ButtonStyle(
-                                            color=ft.Colors.GREY, 
-                                            text_style=ft.TextStyle(font_family='Jersey 25', size=20)
-                                        ), 
-                                        scale=1, 
-                                        on_click=lambda e: desactivarMensajesError(e, 2)), 
-                                        alignment=ft.alignment.bottom_right, 
-                                        expand=True
-                                    )
-                                ]
-                            ),
-                            duration=4000,
-                            bgcolor=ft.Colors.BLACK
-                        )
-                        e.control.page.overlay.append(snackbar)
-                        snackbar.open = True
-                        e.control.page.update()
-
                 actualizarTabla(e, False)
                 #elif tiene_final != True:
                     #   matriz[x][y] = 3
@@ -381,7 +350,36 @@ def pantalla_laberinto(page: ft.Page, modo):
         modoActual = "cargar"
         file_picker.pick_files(initial_directory=documentos, allowed_extensions=["csv"], allow_multiple=False)
 
-    if modo == "manual":
+    if modo == "auto":
+        tiene_inicio = True
+        tiene_final = True
+
+        matriz_jugable = copy.deepcopy(matriz)
+        if mostrarMensajesError1:
+            snackbar = ft.SnackBar(
+                content=ft.Row(
+                    controls=[
+                        ft.Text("Para jugar, presione las flechas de dirección de su teclado.", color=ft.Colors.WHITE, font_family='Jersey 25', size=20),
+                        ft.Container(content=ft.TextButton(
+                            'No volver a mostrar', 
+                            style=ft.ButtonStyle(
+                                color=ft.Colors.GREY, 
+                                text_style=ft.TextStyle(font_family='Jersey 25', size=20)
+                            ), 
+                            scale=1, 
+                            on_click=lambda e: desactivarMensajesError(e, 1)), 
+                            alignment=ft.alignment.bottom_right, 
+                            expand=True
+                        )
+                    ]
+                ),
+                duration=4000,
+                bgcolor=ft.Colors.BLACK
+            )
+            page.overlay.append(snackbar)
+            snackbar.open = True
+            page.update()
+
         def on_keyboard(e: ft.KeyboardEvent):
             global matriz_jugable, posicion_jugador
             #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")
@@ -421,34 +419,6 @@ def pantalla_laberinto(page: ft.Page, modo):
                         img.content.src = "jugador.jpg"
                         page.update()
 
-                #for i in matriz_jugable:
-                #    print(i)
-                #print("\n")
-            else:
-                if mostrarMensajesError1:
-                    snackbar = ft.SnackBar(
-                        content=ft.Row(
-                            controls=[
-                                ft.Text("Para jugar, debe elegir un punto de inicio y final primero.", color=ft.Colors.WHITE, font_family='Jersey 25', size=20),
-                                ft.Container(content=ft.TextButton(
-                                    'No volver a mostrar', 
-                                    style=ft.ButtonStyle(
-                                        color=ft.Colors.GREY, 
-                                        text_style=ft.TextStyle(font_family='Jersey 25', size=20)
-                                    ), 
-                                    scale=1, 
-                                    on_click=lambda e: desactivarMensajesError(e, 1)), 
-                                    alignment=ft.alignment.bottom_right,
-                                    expand=True
-                                )
-                            ]
-                        ),
-                        duration=4000,
-                        bgcolor=ft.Colors.BLACK,
-                    )
-                    page.overlay.append(snackbar)
-                    snackbar.open = True
-                    page.update()
         page.on_keyboard_event = on_keyboard
 
     return ft.View(
