@@ -10,6 +10,7 @@ import copy
 
 dimension = "5x5"
 mostrarMensajesError1 = True
+pasos = []
 
 def setDimension(tamano):
     global dimension
@@ -70,7 +71,7 @@ def pantalla_laberinto(page: ft.Page, modo):
     archivo = ft.Text()
     
     
-    global matriz, matriz_jugable, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos, posicion_jugador
+    global matriz, matriz_jugable, lista_soluciones, tiene_inicio, tiene_final, dimension, inicio, final, modoActual, documentos, posicion_jugador, pasos
     tiene_inicio = False
     tiene_final = True
     matriz = []
@@ -206,7 +207,8 @@ def pantalla_laberinto(page: ft.Page, modo):
         page.update()
 
     def on_click_solucion(e):
-        global matriz, lista_soluciones
+        global matriz, lista_soluciones, pasos
+        pasos = []
         if seleccion_actual[0] and seleccion_actual[0] != e.control:
             seleccion_actual[0].bgcolor = ft.Colors.with_opacity(0.5, '#182C61')
             seleccion_actual[0].update()
@@ -218,7 +220,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         actualizarTabla(e, False)
 
     def resolverLaberinto(e):
-        global matriz, lista_soluciones, tiene_inicio, tiene_final
+        global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
         if tiene_inicio == False or tiene_final == False:
             
             dialogo_error = ft.AlertDialog(
@@ -277,6 +279,8 @@ def pantalla_laberinto(page: ft.Page, modo):
             listView_soluciones.update()
             recorridos = []
             for paso in pasos:#Laberintos.obtenerPasos(matriz):
+                if pasos == []:
+                    break
                 img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
                 antimg = None
                 if pasos.index(paso) != 0:
