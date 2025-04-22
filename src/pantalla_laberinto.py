@@ -36,13 +36,12 @@ def desactivarMensajesError(e, codigo):
 
 
 def guardarMatriz(matriz, ruta):
-
     if not ruta.endswith(".csv"):
         ruta+=".csv"
     try:
         file=open(ruta, "w", newline="")
         writer=csv.writer(file, delimiter=";")
-        writer.writerows(matriz)
+        writer.writerows(Laberintos.limpiar(matriz))
         file.close()
     except Exception as e:
         return e
@@ -96,15 +95,22 @@ def pantalla_laberinto(page: ft.Page, modo):
     def clickImagen(e, x, y):
         global tiene_inicio, tiene_final, matriz_jugable
         if matriz[x][y] == 1:
-            if tiene_inicio != True:
-                matriz[x][y] = 2
-                tiene_inicio = True
-                actualizarTabla(e, False)
-                #elif tiene_final != True:
-                    #   matriz[x][y] = 3
-                    #   tiene_final = True
+            if tiene_inicio == True:
+                if modo == "manual":
+                    for i in range(len(matriz)):
+                        for j in range(len(matriz[0])):
+                            if matriz[i][j] == 2:
+                                matriz[i][j] = 1
+                                break
 
-                #actualizarTabla(e, False)
+            matriz[x][y] = 2
+            tiene_inicio = True
+            actualizarTabla(e, False)
+            #elif tiene_final != True:
+                #   matriz[x][y] = 3
+                #   tiene_final = True
+
+            #actualizarTabla(e, False)
     
     def eventoClickImagen(e):
         x, y = e.control.data

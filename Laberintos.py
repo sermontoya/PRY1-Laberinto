@@ -481,6 +481,13 @@ def cantCuatros(matriz):
                 resultado+=1
     return resultado
 
+def limpiar(matriz):
+    for i in range(len(matriz)):
+        for j in range(len(matriz[0])):
+            if matriz[i][j]==4:
+                matriz[i][j]=1
+    return matriz
+
 def obtenerPasos(matriz):
     coordenada_inicio = [0, 0]
     coordenada_final = [0, 0]
@@ -554,14 +561,14 @@ def obtenerPasos(matriz):
     return coordenadas
         
 matriz = [
-        [2, 0, 0, 0, 0],
-        [1, 1, 0, 0, 0],
-        [1, 1, 1, 0, 0],
+        [2, 4, 4, 4, 0],
+        [1, 1, 0, 4, 0],
+        [1, 1, 1, 4, 0],
         [1, 0, 1, 1, 0],
         [1, 1, 1, 1, 3],
     ]
 
-
+print(limpiar(matriz))
 
 #print(solucionarLaberinto(matriz, 0, 0, 4, 4))
 
