@@ -1,6 +1,6 @@
 import random
 import copy
-
+from pathlib import Path
 resultado=[]
 conexiones=0
 def crearMatrizNula(filas, columnas):

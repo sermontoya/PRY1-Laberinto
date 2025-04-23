@@ -80,8 +80,10 @@ def pantalla_laberinto(page: ft.Page, modo):
     final = [1, 1]
     posicion_jugador = None
     modoActual = ""
-    documentos = Path.home() / "Documents"
-    
+    documentos = Path.home() / "Documents/Soluciones/"
+
+    if not documentos.exists():
+        documentos.mkdir(parents=True)
     listView_soluciones = ft.ListView(
         spacing=5,
         padding=5,
