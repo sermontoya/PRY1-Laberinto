@@ -80,7 +80,7 @@ def pantalla_laberinto(page: ft.Page, modo):
     final = [1, 1]
     posicion_jugador = None
     modoActual = ""
-    documentos = Path.home() / "Documents/Soluciones/"
+    documentos = Path.home() / "Documents/LaberintoLimonense/"
 
     if not documentos.exists():
         documentos.mkdir(parents=True)

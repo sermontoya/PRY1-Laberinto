@@ -108,7 +108,7 @@ def crearCaminoAleatorio(matriz, posX, posY, anterior):
             nuevaY += 2
         if comprobarPosicionValida(len(matriz), nuevaX, nuevaY) and comprobarPosicionValida(len(matriz), intermedioX, intermedioY):
             rand=random.randint(0, 10)
-            if rand<=8 and conexiones>6:
+            if rand<=8 or conexiones>6:
                 if marcarCamino(matriz, intermedioX, intermedioY) and marcarCamino(matriz, nuevaX, nuevaY):
                     matriz[intermedioX][intermedioY]=1
                     crearCaminoAleatorio(matriz, nuevaX, nuevaY, aux)
