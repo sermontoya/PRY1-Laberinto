@@ -102,15 +102,15 @@ def pantalla_laberinto(page: ft.Page, modo):
                             if matriz[i][j] == 2:
                                 matriz[i][j] = 1
                                 break
+            if (tiene_inicio != True and modo != "manual") or modo == "manual":
+                matriz[x][y] = 2
+                tiene_inicio = True
+                actualizarTabla(e, False)
+                #elif tiene_final != True:
+                    #   matriz[x][y] = 3
+                    #   tiene_final = True
 
-            matriz[x][y] = 2
-            tiene_inicio = True
-            actualizarTabla(e, False)
-            #elif tiene_final != True:
-                #   matriz[x][y] = 3
-                #   tiene_final = True
-
-            #actualizarTabla(e, False)
+                #actualizarTabla(e, False)
     
     def eventoClickImagen(e):
         x, y = e.control.data
