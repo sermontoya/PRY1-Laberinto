@@ -93,8 +93,9 @@ def pantalla_laberinto(page: ft.Page, modo):
     seleccion_actual = [None]
 
     def clickImagen(e, x, y):
-        global tiene_inicio, tiene_final, matriz_jugable
+        global tiene_inicio, tiene_final, matriz_jugable, matriz
         if matriz[x][y] == 1:
+            matriz = Laberintos.limpiar(matriz)
             if tiene_inicio == True:
                 if modo == "manual":
                     for i in range(len(matriz)):
