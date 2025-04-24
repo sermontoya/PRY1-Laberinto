@@ -58,17 +58,67 @@ def determinarTotalCaminos(tamano):
         limite= random.randint(1, 5)
     return limite
 
+def tienePuntoInicio(matriz):
+    for i in range(len(matriz)):
+        for j in range(len(matriz)):
+            if matriz[i][j]==2:
+                return True
+    return False
+
 def marcarPuntoInicio(matriz):
     tamano=len(matriz)
     matrizTemp=copy.deepcopy(matriz)
     posX= random.randint(0, tamano-1)
     posY= random.randint(0, tamano-1)
-    while matrizTemp[posX][posY]!=1 and not solucionarLaberinto(matrizTemp):
+    while matrizTemp[posX][posY]!=1:
         posX= random.randint(0, tamano-1)
         posY= random.randint(0, tamano-1)
     matriz[posX][posY]=2
     return matriz
     
+def desmarcarPuntoInicio(matriz):
+    tamano=len(matriz)
+    for i in range(tamano):
+        for j in range(tamano):
+            if matriz[i][j]==2:
+                matriz[i][j]=1
+    return matriz
+
+def quitarCaminos(matriz, modo):
+    tamano=len(matriz)
+    for i in range(tamano):
+        for j in range(tamano):
+            if matriz[i][j]==4:
+                    matriz[i][j]=1
+            if modo=="manual" and matriz[i][j]==2:
+                matriz[i][j]=1
+    return matriz
+
+def picarMuro(matriz, posX, posY):
+    lista=[0,1,2,3]
+    random.shuffle(lista)
+    for temp in lista:
+        if temp==0:
+            if comprobarPosicionValida(len(matriz), posX-2, posY) and matriz[posX-2][posY]==1:
+                matriz[posX-1][posY]=1
+                if random.randint(0, 9)>7:
+                    return matriz
+        elif temp==1:
+            if comprobarPosicionValida(len(matriz), posX+2, posY) and matriz[posX+2][posY]==1:
+                matriz[posX+1][posY]=1
+                if random.randint(0, 9)>7:
+                    return matriz
+        elif temp==2:
+            if comprobarPosicionValida(len(matriz), posX, posY+2) and matriz[posX][posY+2]==1:
+                matriz[posX][posY+1]=1
+                if random.randint(0, 9)>7:
+                    return matriz
+        elif temp==3:
+            if comprobarPosicionValida(len(matriz), posX, posY-2) and matriz[posX][posY-2]==1:
+                matriz[posX][posY-1]=1
+                if random.randint(0, 9)>7:
+                    return matriz
+    return matriz
 def crearCaminosAleatorios(tamano, modo):
     posX= random.randint(0, tamano-1)
     posY= random.randint(0, tamano-1)
@@ -80,6 +130,8 @@ def crearCaminosAleatorios(tamano, modo):
     matriz[posX][posY]=3
     if modo:
         matriz= marcarPuntoInicio(matriz)
+    if len(solucionarLaberinto(copy.deepcopy(matriz)))<2:
+        matriz=picarMuro(matriz, posX, posY)
     return matriz
     
 def crearCaminoAleatorio(matriz, posX, posY, anterior):
@@ -119,7 +171,8 @@ def crearCaminoAleatorio(matriz, posX, posY, anterior):
                     crearCaminoAleatorio(matriz, nuevaX, nuevaY, aux)
                 
     return False
-        
+    
+    
 def marcarCamino(matriz, posX, posY):
     tamano=len(matriz)
     if comprobarPosicionValida(tamano, posX, posY) and matriz[posX][posY]==0:
@@ -405,6 +458,7 @@ def solucionarLaberinto(matriz):
             if matriz[j][i] == 2:
                 x = j
                 y = i
+
     solucionar_aux(matriz, x, y, [])
     return resultado
             
@@ -440,13 +494,13 @@ def solucionar_aux(matriz, posX, posY, pasos):
         #    pasos.pop()
         return False
     
-    if arriba == 1:
+    if arriba == 1 or arriba == 4 and [posX, posY-1] not in pasos:
         solucionar_aux(copy.deepcopy(matriz), posX, posY-1, pasos)
-    if abajo == 1:
+    if abajo == 1 or abajo == 4 and [posX, posY+1] not in pasos:
         solucionar_aux(copy.deepcopy(matriz), posX, posY+1, pasos)
-    if izquierda == 1:
+    if izquierda == 1 or izquierda == 4 and [posX-1, posY] not in pasos:
         solucionar_aux(copy.deepcopy(matriz), posX-1, posY, pasos)
-    if derecha == 1:
+    if derecha == 1 or derecha == 4 and [posX+1, posY] not in pasos:
         solucionar_aux(copy.deepcopy(matriz), posX+1, posY, pasos)
 
 

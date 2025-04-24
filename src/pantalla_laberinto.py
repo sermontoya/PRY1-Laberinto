@@ -35,7 +35,8 @@ def desactivarMensajesError(e, codigo):
     e.control.page.update()
 
 
-def guardarMatriz(matriz, ruta):
+def guardarMatriz(matriz, ruta, modo):
+    matriz= Laberintos.quitarCaminos(matriz, modo)
     if not ruta.endswith(".csv"):
         ruta+=".csv"
     try:
@@ -46,7 +47,7 @@ def guardarMatriz(matriz, ruta):
     except Exception as e:
         return e
 
-def cargarMatriz(ruta):
+def cargarMatriz(ruta, modo):
     global matriz, dimension, matriz_jugable
     try:
         file=open(ruta, "r")
@@ -58,6 +59,12 @@ def cargarMatriz(ruta):
                 temp+= [int(i)]
             matriz+=[temp]
             temp=[]
+        if modo=="auto":
+            if not Laberintos.tienePuntoInicio(matriz):
+                matriz=Laberintos.marcarPuntoInicio(matriz)
+        else:
+            if Laberintos.tienePuntoInicio(matriz):
+                matriz=Laberintos.desmarcarPuntoInicio(matriz)
         matriz_jugable = copy.deepcopy(matriz)
         file.close()
     except Exception as e:
@@ -189,11 +196,12 @@ def pantalla_laberinto(page: ft.Page, modo):
         global modoActual
         if modoActual=="guardar":
             if e.path:
-                guardarMatriz(matriz, e.path)
+                guardarMatriz(matriz, e.path, modo)
+                
         else:
             if e.files:
                 if e.files[0].path:
-                    cargarMatriz(e.files[0].path)
+                    cargarMatriz(e.files[0].path, modo)
                     print(matriz)
                     global dimension
                     dimension = str(len(matriz)) + "x" + str(len(matriz))
@@ -230,6 +238,8 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     def resolverLaberinto(e):
         global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
+        lista_soluciones = []
+        
         if tiene_inicio == False or tiene_final == False:
             
             dialogo_error = ft.AlertDialog(
@@ -267,6 +277,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             for i in range(len(lista_soluciones)):
                 icono = ft.Icons.CHECK
                 texto = f"Solución {i+1}"
+                
                 if i == 0:
                     icono = ft.Icons.STAR
                     texto = "Mejor solución"
@@ -274,7 +285,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     content=ft.Row([
                         ft.Icon(icono, ft.Colors.WHITE),
                         ft.Text(texto, size=16, color=ft.Colors.WHITE, font_family='Jersey 25'),
-                        ft.Text(f"({Laberintos.cantCuatros(lista_soluciones[i])})", size=16, color=ft.Colors.GREY, font_family='Jersey 25')
+                        ft.Text(f"({Laberintos.cantCuatros(lista_soluciones[i])+1})", size=16, color=ft.Colors.GREY, font_family='Jersey 25')
                     ]),
                     bgcolor=ft.Colors.with_opacity(0.5, '#182C61'),
                     border_radius=10,
