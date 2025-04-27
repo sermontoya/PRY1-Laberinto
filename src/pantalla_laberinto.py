@@ -406,13 +406,45 @@ def pantalla_laberinto(page: ft.Page, modo):
 
         mispasos = []
 
+
+        def mostrarFinal(texto):
+            def close_dlg(e):
+                dlg_mod.open = False
+                page.update()
+            
+            dlg_mod = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Felicidades", font_family='Jersey 25', size=26),
+            content=ft.Text(texto, font_family='Jersey 25', size=18),
+            actions=[
+                ft.TextButton("Aceptar", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            )
+            
+            page.overlay.append(dlg_mod)
+            dlg_mod.open = True
+            page.update()
+            
         def on_keyboard(e: ft.KeyboardEvent):
             global matriz_jugable, posicion_jugador
             #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")
-
+            
             if tiene_inicio and tiene_final:
                 if posicion_jugador == None:
                     posicion_jugador = inicio
+                
+                if Laberintos.comprobarMetaAlrededores(matriz_jugable, posicion_jugador[0], posicion_jugador[1]):
+                    texto = "¡Felicidades! Has llegado a la meta.\n"
+                    lista_soluciones = Laberintos.solucionarLaberinto(matriz)
+                    solucionesOrdenadas= Laberintos.ordenarSoluciones(lista_soluciones)
+                    if len(mispasos) == Laberintos.cantCuatros(solucionesOrdenadas[0]):
+                        texto += "Has encontrado la mejor solución."
+                        
+                    else:
+                        texto += "Existe una o varias soluciones más optimas."
+                    
+                    mostrarFinal(texto)
                 
                 pos_anterior = copy.deepcopy(posicion_jugador)
 

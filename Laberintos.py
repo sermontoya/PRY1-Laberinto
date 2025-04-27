@@ -46,6 +46,17 @@ def crearMatrizNula(filas, columnas):
     return matriz
 """
 
+def comprobarMetaAlrededores(matriz, x, y):
+    if comprobarPosicionValida(len(matriz), x-1, y) and matriz[x-1][y] == 3:
+        return True
+    elif comprobarPosicionValida(len(matriz), x+1, y) and matriz[x+1][y] == 3:
+        return True
+    elif comprobarPosicionValida(len(matriz), x, y-1) and matriz[x][y-1] == 3:
+        return True
+    elif comprobarPosicionValida(len(matriz), x, y+1) and matriz[x][y+1] == 3:
+        return True
+    return False
+
 def determinarTotalCaminos(tamano):
     limite=1
     if tamano ==10:
