@@ -126,7 +126,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         x, y = e.control.data
         clickImagen(e, x, y)
 
-    def generarTabla(matriz, solucion):
+    def generarTabla(matriz, solucion=False):
         global inicio, final
         tabla = []
         cont_i = 0
@@ -142,7 +142,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                         img = "inicio_recorrido.jpg"
                     else:
                         img = "inicio.jpg"
-                        inicio = [cont_i, cont_j]
+                    inicio = [cont_i, cont_j]
                 elif i == 3:
                     img = "final.jpg"
                     final = [cont_i, cont_j]
@@ -190,7 +190,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         temp = 1
     matriz = Laberintos.crearCaminosAleatorios(int(dimension.split("x")[0]), temp)
     tabla_controls = ft.Row(
-        controls=generarTabla(matriz, False),
+        controls=generarTabla(matriz),
         spacing=0,
         alignment=ft.MainAxisAlignment.CENTER
     )
@@ -208,7 +208,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     print(matriz)
                     global dimension
                     dimension = str(len(matriz)) + "x" + str(len(matriz))
-                    tabla_controls.controls = generarTabla(matriz, False)
+                    tabla_controls.controls = generarTabla(matriz)
                     page.update()
                 else:
                     archivo.value = "No se seleccionó ningún archivo."
@@ -216,14 +216,14 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     file_picker.on_result = on_file_result
 
-    def actualizarTabla(e, generar=True):
+    def actualizarTabla(e, generar=True, solucion=False):
         global matriz
         if generar:
             global tiene_inicio, tiene_final
             matriz = Laberintos.crearCaminoAleatorio(int(dimension.split("x")[0]))
             tiene_inicio = False
             tiene_final = False
-        tabla_controls.controls = generarTabla(matriz, True)
+        tabla_controls.controls = generarTabla(matriz, solucion)
         page.update()
 
     def on_click_solucion(e):
@@ -237,7 +237,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         seleccion_actual[0] = e.control
         e.control.update()
         matriz = lista_soluciones[e.control.data]
-        actualizarTabla(e, False)
+        actualizarTabla(e, False, True)
 
     def resolverLaberinto(e):
         global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
@@ -327,7 +327,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                 recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
-            actualizarTabla(e, False)
+            actualizarTabla(e, False, True)
 
             #if not isinstance(matriz, int):
             #    actualizarTabla(e, False)

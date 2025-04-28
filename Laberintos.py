@@ -564,7 +564,7 @@ def obtenerPasos(matriz):
                 coordenada_inicio = [i, j]
             elif matriz[i][j]==3:
                 coordenada_final = [i, j]
-
+    coordenadas.append(coordenada_inicio)
     n = 0
     encontrado = False
     while encontrado == False:
