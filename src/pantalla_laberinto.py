@@ -264,6 +264,8 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.update()
 
         else:
+            matriz = Laberintos.limpiar(matriz)
+            actualizarTabla(e, False)
             lista_soluciones = Laberintos.solucionarLaberinto(matriz)
             if lista_soluciones == -1:
                 return "ERROR"
