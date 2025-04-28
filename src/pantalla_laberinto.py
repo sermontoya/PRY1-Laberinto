@@ -311,9 +311,13 @@ def pantalla_laberinto(page: ft.Page, modo):
                 #if paso in recorridos:
                 #    img.content.src = "camino1.jpg"
                 #else:
-                if antimg != None:
-                        antimg.content.src = "camino_recorrido.jpg"
-                img.content.src = "jugador.jpg"
+                if antimg != None and antimg.content.src != "inicio_recorrido.jpg":
+                    antimg.content.src = "camino_recorrido.jpg"
+                
+                if recorridos == []:
+                    img.content.src = "inicio_recorrido.jpg"
+                else:
+                    img.content.src = "jugador.jpg"
                 
                 recorridos.append(paso)
                 page.update()
