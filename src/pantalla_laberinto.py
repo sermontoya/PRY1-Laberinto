@@ -271,7 +271,10 @@ def pantalla_laberinto(page: ft.Page, modo):
 
             index = lista_soluciones.index(matriz)
             lista_soluciones = Laberintos.ordenarSoluciones(lista_soluciones)
-            pasos = Laberintos.getTotalPasos()[index]
+            if modo == "manual":
+                pasos = Laberintos.obtenerPasos(matriz)
+            else:
+                pasos = Laberintos.getTotalPasos()[index]
             #if index != 0:
             #    temp = lista_soluciones[index]
             #    lista_soluciones[index] = lista_soluciones[0]
