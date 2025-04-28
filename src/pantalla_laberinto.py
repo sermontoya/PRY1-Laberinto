@@ -139,7 +139,10 @@ def pantalla_laberinto(page: ft.Page, modo):
                     img = "camino1.jpg"
                 elif i == 2:
                     if solucion:
-                        img = "inicio_recorrido.jpg"
+                        if esMejor:
+                            img = "inicio_recorrido.jpg"
+                        else:
+                            img = "inicio_mal_recorrido.jpg"
                     else:
                         img = "inicio.jpg"
                     inicio = [cont_i, cont_j]
