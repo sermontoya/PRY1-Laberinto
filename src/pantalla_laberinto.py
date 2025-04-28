@@ -473,6 +473,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     if pos_anterior != posicion_jugador:
                         imgant = tabla_controls.controls[pos_anterior[0]].controls[1].controls[pos_anterior[1]]
                         if 1==1:
+                            """
                             if mispasos != [] and posicion_jugador in mispasos and imgant.content.src != "inicio.jpg":
                                 imgant.content.src = "camino1.jpg"
                                 if mispasos[-1] == posicion_jugador:
@@ -487,16 +488,20 @@ def pantalla_laberinto(page: ft.Page, modo):
                                             matriz_jugable[mispasos[i][0]][mispasos[i][1]] = 1
                                     for i in range(index, len(mispasos)):
                                         mispasos.pop()
+                            
                             else:
-                                if imgant.content.src != "inicio.jpg":                 
+                            """
+                            if imgant.content.src != "inicio.jpg" and imgant.content.src != "inicio_recorrido.jpg":
+                                if matriz_jugable[pos_anterior[0]][pos_anterior[1]] != 2:               
                                     imgant.content.src = "camino_recorrido.jpg"
                                     matriz_jugable[pos_anterior[0]][pos_anterior[1]] = 4
-                                    mispasos.append(pos_anterior)
-                                else:
-                                    mispasos.append(pos_anterior)   
+                                mispasos.append(pos_anterior)
+                            else:
+                                imgant.content.src = "inicio_recorrido.jpg"
+                                mispasos.append(pos_anterior)   
                         
                         img = tabla_controls.controls[posicion_jugador[0]].controls[1].controls[posicion_jugador[1]]
-                        if img.content.src != "inicio.jpg":
+                        if img.content.src != "inicio.jpg" and img.content.src != "inicio_recorrido.jpg":
                             img.content.src = "jugador.jpg"
                         page.update()
 
