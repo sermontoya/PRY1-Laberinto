@@ -265,6 +265,7 @@ def pantalla_laberinto(page: ft.Page, modo):
 
         else:
             matriz = Laberintos.limpiar(matriz)
+            listView_soluciones.controls = []
             actualizarTabla(e, False)
             lista_soluciones = Laberintos.solucionarLaberinto(matriz)
             if lista_soluciones == -1:
@@ -332,7 +333,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             #if not isinstance(matriz, int):
             #    actualizarTabla(e, False)
 
-    def confirmarVolver(e):   
+    def confirmarVolver(e):
         def close_dlg(e):
             dlg_modal.open = False
             page.update()
@@ -420,20 +421,63 @@ def pantalla_laberinto(page: ft.Page, modo):
         mispasos = []
 
 
-        def mostrarFinal(texto):
+        def mostrarFinal(texto, esMejor):
+
+            def ver_optima(e):
+                global matriz
+                dlg_mod.open = False
+                listView_soluciones.controls = []
+                matriz = Laberintos.limpiar(matriz)
+                actualizarTabla(e, False)
+                lista_soluciones = Laberintos.solucionarLaberinto(matriz)
+                if lista_soluciones == -1:
+                    return "ERROR"
+                matriz = Laberintos.solucionOptima(lista_soluciones)
+                pasos = Laberintos.obtenerPasos(matriz)
+                recorridos = []
+                for paso in pasos:
+                    if pasos == []:
+                        break
+                    img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
+                    antimg = None
+                    if pasos.index(paso) != 0:
+                        antimg = tabla_controls.controls[recorridos[pasos.index(paso)-1][0]].controls[1].controls[recorridos[pasos.index(paso)-1][1]]
+                    if antimg != None and antimg.content.src != "inicio_recorrido.jpg":
+                        antimg.content.src = "camino_recorrido.jpg"
+                    if recorridos == []:
+                        img.content.src = "inicio_recorrido.jpg"
+                    else:
+                        img.content.src = "jugador.jpg"
+                    recorridos.append(paso)
+                    page.update()
+                    time.sleep(0.3)
+                actualizarTabla(e, False, True)
+
+            def jugar_de_nuevo(e):
+                dlg_mod.open = False
+                global matriz_jugable, posicion_jugador, matriz
+                matriz_jugable = Laberintos.limpiar(matriz)
+                posicion_jugador = None
+                listView_soluciones.controls = []
+                actualizarTabla(e, False)
+
             def close_dlg(e):
                 dlg_mod.open = False
                 page.update()
             
             dlg_mod = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Felicidades", font_family='Jersey 25', size=26),
-            content=ft.Text(texto, font_family='Jersey 25', size=18),
-            actions=[
-                ft.TextButton("Aceptar", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
+                modal=True,
+                title=ft.Text("Felicidades", font_family='Jersey 25', size=26),
+                content=ft.Text(texto, font_family='Jersey 25', size=18),
+                actions=[
+                    ft.TextButton("Jugar de nuevo", on_click=jugar_de_nuevo, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))),
+                    ft.TextButton("Salir", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)))
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
             )
+
+            if not esMejor:
+                dlg_mod.actions = [(ft.TextButton("Ver más óptima", on_click=ver_optima, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18))))] + dlg_mod.actions
             
             page.overlay.append(dlg_mod)
             dlg_mod.open = True
@@ -451,13 +495,14 @@ def pantalla_laberinto(page: ft.Page, modo):
                     texto = "¡Felicidades! Has llegado a la meta.\n"
                     lista_soluciones = Laberintos.solucionarLaberinto(matriz)
                     solucionesOrdenadas= Laberintos.ordenarSoluciones(lista_soluciones)
+                    esMejor = False
                     if len(mispasos) == Laberintos.cantCuatros(solucionesOrdenadas[0]):
                         texto += "Has encontrado la mejor solución."
-                        
+                        esMejor = True
                     else:
                         texto += "Existe una o varias soluciones más optimas."
                     
-                    mostrarFinal(texto)
+                    mostrarFinal(texto, esMejor)
                 
                 pos_anterior = copy.deepcopy(posicion_jugador)
 
