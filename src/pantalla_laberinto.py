@@ -115,7 +115,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             if (tiene_inicio != True and modo != "manual") or modo == "manual":
                 matriz[x][y] = 2
                 tiene_inicio = True
-                actualizarTabla(e, False)
+                actualizarTabla(e, generar=False)
                 #elif tiene_final != True:
                     #   matriz[x][y] = 3
                     #   tiene_final = True
@@ -126,7 +126,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         x, y = e.control.data
         clickImagen(e, x, y)
 
-    def generarTabla(matriz, solucion=False):
+    def generarTabla(matriz, solucion=False, esMejor=False):
         global inicio, final
         tabla = []
         cont_i = 0
@@ -147,7 +147,10 @@ def pantalla_laberinto(page: ft.Page, modo):
                     img = "final.jpg"
                     final = [cont_i, cont_j]
                 elif i == 4:
-                    img = "camino_recorrido.jpg"
+                    if esMejor:
+                        img = "camino_recorrido.jpg"
+                    else:
+                        img = "mal_recorrido.jpg"
 
                 w = 32
                 h = 32
@@ -216,14 +219,14 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     file_picker.on_result = on_file_result
 
-    def actualizarTabla(e, generar=True, solucion=False):
+    def actualizarTabla(e, generar=True, solucion=False, esMejor=False):
         global matriz
         if generar:
             global tiene_inicio, tiene_final
             matriz = Laberintos.crearCaminoAleatorio(int(dimension.split("x")[0]))
             tiene_inicio = False
             tiene_final = False
-        tabla_controls.controls = generarTabla(matriz, solucion)
+        tabla_controls.controls = generarTabla(matriz, solucion, esMejor)
         page.update()
 
     def on_click_solucion(e):
@@ -237,7 +240,10 @@ def pantalla_laberinto(page: ft.Page, modo):
         seleccion_actual[0] = e.control
         e.control.update()
         matriz = lista_soluciones[e.control.data]
-        actualizarTabla(e, False, True)
+        esMejor = False
+        if e.control.data == 0:
+            esMejor = True
+        actualizarTabla(e, False, True, esMejor)
 
     def resolverLaberinto(e):
         global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
@@ -266,7 +272,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         else:
             matriz = Laberintos.limpiar(matriz)
             listView_soluciones.controls = []
-            actualizarTabla(e, False)
+            actualizarTabla(e, generar=False)
             lista_soluciones = Laberintos.solucionarLaberinto(matriz)
             if lista_soluciones == -1:
                 return "ERROR"
@@ -328,7 +334,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                 recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
-            actualizarTabla(e, False, True)
+            actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
             #if not isinstance(matriz, int):
             #    actualizarTabla(e, False)
@@ -428,7 +434,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                 dlg_mod.open = False
                 listView_soluciones.controls = []
                 matriz = Laberintos.limpiar(matriz)
-                actualizarTabla(e, False)
+                actualizarTabla(e, generar=False)
                 lista_soluciones = Laberintos.solucionarLaberinto(matriz)
                 if lista_soluciones == -1:
                     return "ERROR"
@@ -451,7 +457,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     recorridos.append(paso)
                     page.update()
                     time.sleep(0.3)
-                actualizarTabla(e, False, True)
+                actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
             def jugar_de_nuevo(e):
                 dlg_mod.open = False
@@ -459,7 +465,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                 matriz_jugable = Laberintos.limpiar(matriz)
                 posicion_jugador = None
                 listView_soluciones.controls = []
-                actualizarTabla(e, False)
+                actualizarTabla(e, generar=False)
 
             def close_dlg(e):
                 dlg_mod.open = False
