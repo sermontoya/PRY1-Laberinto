@@ -464,10 +464,12 @@ def pantalla_laberinto(page: ft.Page, modo):
 
             def jugar_de_nuevo(e):
                 dlg_mod.open = False
-                global matriz_jugable, posicion_jugador, matriz
-                matriz_jugable = Laberintos.limpiar(matriz)
+                global matriz_jugable, posicion_jugador, matriz, solucionesOrdenadas
+                matriz_jugable = Laberintos.limpiar(matriz_jugable)
+                
                 posicion_jugador = None
                 listView_soluciones.controls = []
+                solucionesOrdenadas = Laberintos.ordenarSoluciones(lista_soluciones)
                 actualizarTabla(e, generar=False)
 
             def close_dlg(e):
