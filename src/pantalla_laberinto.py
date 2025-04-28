@@ -126,7 +126,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         x, y = e.control.data
         clickImagen(e, x, y)
 
-    def generarTabla(matriz):
+    def generarTabla(matriz, solucion):
         global inicio, final
         tabla = []
         cont_i = 0
@@ -138,8 +138,11 @@ def pantalla_laberinto(page: ft.Page, modo):
                 if i == 1 or i == 5:
                     img = "camino1.jpg"
                 elif i == 2:
-                    img = "inicio.jpg"
-                    inicio = [cont_i, cont_j]
+                    if solucion:
+                        img = "inicio_recorrido.jpg"
+                    else:
+                        img = "inicio.jpg"
+                        inicio = [cont_i, cont_j]
                 elif i == 3:
                     img = "final.jpg"
                     final = [cont_i, cont_j]
@@ -187,7 +190,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         temp = 1
     matriz = Laberintos.crearCaminosAleatorios(int(dimension.split("x")[0]), temp)
     tabla_controls = ft.Row(
-        controls=generarTabla(matriz),
+        controls=generarTabla(matriz, False),
         spacing=0,
         alignment=ft.MainAxisAlignment.CENTER
     )
@@ -205,7 +208,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                     print(matriz)
                     global dimension
                     dimension = str(len(matriz)) + "x" + str(len(matriz))
-                    tabla_controls.controls = generarTabla(matriz)
+                    tabla_controls.controls = generarTabla(matriz, False)
                     page.update()
                 else:
                     archivo.value = "No se seleccionó ningún archivo."
@@ -220,7 +223,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             matriz = Laberintos.crearCaminoAleatorio(int(dimension.split("x")[0]))
             tiene_inicio = False
             tiene_final = False
-        tabla_controls.controls = generarTabla(matriz)
+        tabla_controls.controls = generarTabla(matriz, True)
         page.update()
 
     def on_click_solucion(e):
@@ -309,8 +312,9 @@ def pantalla_laberinto(page: ft.Page, modo):
                 #    img.content.src = "camino1.jpg"
                 #else:
                 if antimg != None:
-                    antimg.content.src = "camino_recorrido.jpg"
+                        antimg.content.src = "camino_recorrido.jpg"
                 img.content.src = "jugador.jpg"
+                
                 recorridos.append(paso)
                 page.update()
                 time.sleep(0.3)
