@@ -211,7 +211,6 @@ def pantalla_laberinto(page: ft.Page, modo):
             if e.files:
                 if e.files[0].path:
                     cargarMatriz(e.files[0].path, modo)
-                    print(matriz)
                     global dimension
                     dimension = str(len(matriz)) + "x" + str(len(matriz))
                     tabla_controls.controls = generarTabla(matriz)
