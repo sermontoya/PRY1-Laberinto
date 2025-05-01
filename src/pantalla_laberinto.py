@@ -333,9 +333,10 @@ def pantalla_laberinto(page: ft.Page, modo):
                 else:
                     img.content.src = "jugador.jpg"
                 
-                recorridos.append(paso)
-                page.update()
-                time.sleep(0.3)
+                if paso not in recorridos:
+                    recorridos.append(paso)
+                    page.update()
+                    time.sleep(0.2)
             actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
             #if not isinstance(matriz, int):
@@ -458,7 +459,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                         img.content.src = "jugador.jpg"
                     recorridos.append(paso)
                     page.update()
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                 actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
             def jugar_de_nuevo(e):
