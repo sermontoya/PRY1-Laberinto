@@ -306,7 +306,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             dialogo_error = ft.AlertDialog(
                 modal=True,
                 title=ft.Row([
-                    ft.Icon(name=ft.icons.ERROR, color=ft.Colors.RED),
+                    ft.Icon(name=ft.Icons.ERROR, color=ft.Colors.RED),
                     ft.Text("Error", font_family='Jersey 25', size=26),
                 ], spacing=10),
                 content=ft.Text("Debe seleccionar un punto de inicio.", font_family='Jersey 25', size=18),
@@ -514,21 +514,21 @@ def pantalla_laberinto(page: ft.Page, modo):
                 actualizarTabla(e, generar=False)
                 lista_soluciones = Laberintos.solucionarLaberinto(matriz)
                 if lista_soluciones == -1:
-                    def close_dlg(e):
-                        dlg_mod.open = False
+                    def close_dlg2(e):
+                        dlg_mod2.open = False
                         page.update()
                     
-                    dlg_mod = ft.AlertDialog(
+                    dlg_mod2 = ft.AlertDialog(
                         modal=True,
                         title=ft.Text("Error", font_family='Jersey 25', size=26),
                         content=ft.Text("Ha ocurrido un error al resolver el laberinto, por favor vuelva a intentarlo con otro laberinto.", font_family='Jersey 25', size=18),
                         actions=[
-                            ft.TextButton("Ok", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)))
+                            ft.TextButton("Ok", on_click=close_dlg2, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)))
                         ],
                         actions_alignment=ft.MainAxisAlignment.END,
                     )
-                    page.overlay.append(dlg_mod)
-                    dlg_mod.open = True
+                    page.overlay.append(dlg_mod2)
+                    dlg_mod2.open = True
                     page.update()
                 matriz = Laberintos.solucionOptima(lista_soluciones)
                 pasos = Laberintos.obtenerPasos(matriz)

@@ -42,7 +42,7 @@ def marcarPuntoInicio(matriz):
     matrizTemp=copy.deepcopy(matriz)
     posX= random.randint(0, tamano-1)
     posY= random.randint(0, tamano-1)
-    while matrizTemp[posX][posY]!=1 and matrizTemp[posX][posY]==3:
+    while matrizTemp[posX][posY]!=1 or matrizTemp[posX][posY]==3:
         posX= random.randint(0, tamano-1)
         posY= random.randint(0, tamano-1)
     matriz[posX][posY]=2
