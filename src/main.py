@@ -4,6 +4,10 @@ from pantalla_laberinto import pantalla_laberinto, setDimension
 dimensionCache = "5x5"
 modoCache = "auto"
 
+"""
+Main function that runs when the application starts.
+Creates the main window with navigation menus.
+"""
 def main(page: ft.Page):
     page.window.maximized = True
     page.title = 'Laberinto limonense'
@@ -12,6 +16,9 @@ def main(page: ft.Page):
         'Jersey 20': 'fonts/Jersey20-Regular.ttf'
     }
 
+    """
+    Function executed when the route changes.
+    """
     def route_change(route):
         page.views.clear()
 
@@ -31,6 +38,11 @@ def main(page: ft.Page):
 
         dimensiones_dropdown.value = dimensionCache
 
+        """
+        Function executed when the "Jugar" button is clicked.
+        Changes the maze's size and redirects to the screen to display the maze graphically.
+        Depending on the selected mode, you are redirected to the automatic or manual maze screen.
+        """
         def goLaberinto(e):
             global dimensionCache
             setDimension(dimensiones_dropdown.value)
@@ -40,6 +52,9 @@ def main(page: ft.Page):
             else:
                 page.go('/laberinto_auto')
         
+        """
+        Sets the game mode in the global variable "modoCache" and redirects to the maze dimension selection screen.
+        """
         def setModo(modo):
             global modoCache
             modoCache = modo
@@ -269,10 +284,16 @@ def main(page: ft.Page):
         
         page.update()
 
+    """
+    Function to return to the previous view by navigation.
+    """
     def view_pop(view):
-        page.views.pop()
-        top_view = page.views[-1]
-        page.go(top_view.route)
+        try:
+            page.views.pop()
+            top_view = page.views[-1]
+            page.go(top_view.route)
+        except:
+            page.go('/')
     
     page.on_route_change = route_change
     page.on_view_pop = view_pop
