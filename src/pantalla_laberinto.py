@@ -11,6 +11,7 @@ import copy
 dimension = "5x5"
 mostrarMensajesError1 = True
 pasos = []
+resolviendo = False
 
 """
 It sets the dimension of the maze in the global variable.
@@ -123,8 +124,8 @@ def pantalla_laberinto(page: ft.Page, modo):
     If a starting point has already been selected and the mode is manual, a new starting point is marked on that square.
     """
     def clickImagen(e, x, y):
-        global tiene_inicio, tiene_final, matriz_jugable, matriz
-        if matriz[x][y] == 1:
+        global tiene_inicio, tiene_final, matriz_jugable, matriz, resolviendo
+        if matriz[x][y] == 1 and not resolviendo:
             matriz = Laberintos.limpiar(matriz)
             if tiene_inicio == True:
                 if modo == "manual":
@@ -295,9 +296,11 @@ def pantalla_laberinto(page: ft.Page, modo):
     In manual mode, only the animation of the best solution to the maze is shown.
     """
     def resolverLaberinto(e):
-        global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
+        global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos, resolviendo
         lista_soluciones = []
-        
+        if resolviendo:
+            return
+
         if tiene_inicio == False or tiene_final == False:
             
             dialogo_error = ft.AlertDialog(
@@ -319,6 +322,7 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.update()
 
         else:
+            resolviendo = True
             matriz = Laberintos.limpiar(matriz)
             listView_soluciones.controls = []
             actualizarTabla(e, generar=False)
@@ -394,6 +398,8 @@ def pantalla_laberinto(page: ft.Page, modo):
                     recorridos.append(paso)
                     page.update()
                     time.sleep(0.2)
+            
+            resolviendo = False
             actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
     """
