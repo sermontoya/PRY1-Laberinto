@@ -11,13 +11,17 @@ import copy
 dimension = "5x5"
 mostrarMensajesError1 = True
 pasos = []
+resolviendo = False
 
+"""
+It sets the dimension of the maze in the global variable.
+"""
 def setDimension(tamano):
     global dimension
     dimension = tamano
 
 """
-Desactiva los mensajes de ayuda durante la sesión.
+This function disables help messages during the session.
 """
 def desactivarMensajesError(e, codigo):
     global mostrarMensajesError1
@@ -38,7 +42,7 @@ def desactivarMensajesError(e, codigo):
     e.control.page.update()
 
 """
-Limpia la matriz y la guarda en un archivo .csv en la ruta especificada.
+Clears the array and saves it to a .csv file at the specified path.
 """
 def guardarMatriz(matriz, ruta, modo):
     matriz= Laberintos.quitarCaminos(matriz, modo)
@@ -53,9 +57,9 @@ def guardarMatriz(matriz, ruta, modo):
         return e
 
 """
-Carga la matriz desde un archivo .csv en la ruta especificada.
-En caso de que se haga desde el modo automático y no haya un punto de inicio en la matriz que se está cargando, se marcará un punto de inicio aleatorio.
-En caso de que se haga desde el modo manual y haya un punto de inicio en la matriz que se está cargando, se desmarcará el punto de inicio.
+Loads the matrix from a .csv file in the specified path.
+If loaded in automatic mode and there is no starting point in the matrix being loaded, a random starting point will be selected.
+If loaded in manual mode and there is a starting point in the matrix being loaded, the starting point will be unselected.
 """
 def cargarMatriz(ruta, modo):
     global matriz, dimension, matriz_jugable
@@ -81,7 +85,7 @@ def cargarMatriz(ruta, modo):
         return e
 
 """
-Se encarga de mostrar la pantalla del laberinto y de manejar los eventos de la misma.
+It is responsible for displaying the maze screen and handling its events.
 """
 def pantalla_laberinto(page: ft.Page, modo):
     page.window.maximized = True
@@ -115,13 +119,13 @@ def pantalla_laberinto(page: ft.Page, modo):
     seleccion_actual = [None]
 
     """
-    Esta función se encarga de manejar el evento cuando se presiona una casilla del laberinto.
-    Si la casilla es un camino vacío (1), aún no se ha seleccionado un punto de inicio y el modo es manual, se marca el punto de inicio en esa casilla.
-    Si ya se había seleccionado un punto de inicio y el modo es manual, se marca un nuevo punto de inicio en esa casilla.
+    This function handles the event when a maze square is pressed.
+    If the square is an empty space (1), a starting point has not yet been selected, and the mode is manual, the starting point is marked on that square.
+    If a starting point has already been selected and the mode is manual, a new starting point is marked on that square.
     """
     def clickImagen(e, x, y):
-        global tiene_inicio, tiene_final, matriz_jugable, matriz
-        if matriz[x][y] == 1:
+        global tiene_inicio, tiene_final, matriz_jugable, matriz, resolviendo
+        if matriz[x][y] == 1 and not resolviendo:
             matriz = Laberintos.limpiar(matriz)
             if tiene_inicio == True:
                 if modo == "manual":
@@ -136,17 +140,17 @@ def pantalla_laberinto(page: ft.Page, modo):
                 actualizarTabla(e, generar=False)
     
     """
-    Recibe el evento cuando se presiona una casilla del laberinto y llama a la función clickImagen.
+    Receives the event when a square in the maze is pressed and calls the clickImagen function.
     """
     def eventoClickImagen(e):
         x, y = e.control.data
         clickImagen(e, x, y)
 
     """
-    Genera una tabla con las casillas del laberinto y las imágenes de cada casilla.
-    Recibe parametros opcionales, como:
-    - solucion: Si se desea mostrar la bandera de inicio marcada como solución (en amarillo o rojo según corresponda).
-    - esMejor: Si es la mejor solución del laberinto, se muestra en amarillo, si no lo es se muestra en rojo.
+    Generates a table with the maze spaces and the images in each square.
+    It takes optional parameters, such as:
+    - solucion: Whether to display the start flag marked as a solution (in yellow or red as appropriate).
+    - esMejor: If it is the best solution to the maze, it is displayed in yellow; if not, it is displayed in red.
     """
     def generarTabla(matriz, solucion=False, esMejor=False):
         global inicio, final
@@ -211,7 +215,6 @@ def pantalla_laberinto(page: ft.Page, modo):
             cont_j = 0
         return tabla
 
-    #selectorDimensiones.value = "5x5"
     if modo == "manual":
         temp= 0
     else:
@@ -223,8 +226,8 @@ def pantalla_laberinto(page: ft.Page, modo):
         alignment=ft.MainAxisAlignment.CENTER
     )
 
-    """
-    Recibe el evento cuando se selecciona un archivo y llama a la función guardarMatriz.
+    """ 
+    Receives the event when a file is selected and calls the function guardarMatriz.
     """
     def on_file_result(e: ft.FilePickerResultEvent):
         global modoActual
@@ -246,13 +249,13 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     file_picker.on_result = on_file_result
 
-    """
-    Actualiza la tabla del laberinto según los parámetros recibidos.
-    Recibe parametros opcionales, como:
-    - generar: Si se desea generar un nuevo laberinto por completo.
-    - solucion: Si lo que se va a mostrar es una solución del laberinto.
-    - esMejor: Si lo que se va a mostrar es la mejor solución del laberinto.
-    La función llama a la función generarTabla para generar la nueva tabla, la cual tiene su manera para interpretar los parámetros que se le envian.
+    """ 
+    Updates the maze table based on the received parameters.
+    It receives optional parameters, such as:
+    - generar: If you want to generate a completely new maze.
+    - solucion: If what is to be displayed is a solution to the maze.
+    - esMejor: If what is to be displayed is the best solution to the maze.
+    The function calls the generarTabla function to generate the new table, which has its own way of interpreting the parameters passed to it.
     """
     def actualizarTabla(e, generar=True, solucion=False, esMejor=False):
         global matriz
@@ -265,8 +268,8 @@ def pantalla_laberinto(page: ft.Page, modo):
         page.update()
 
     """
-    Actualiza el laberinto gráficamente con una solución seleccionada de la lista de soluciones.
-    Si el indice seleccionado es 0, significa que se debe mostrar la mejor solución del laberinto.
+    Updates the maze graphically with a solution selected from the solution list.
+    If the selected index is 0, it means the best solution to the maze should be displayed.
     """
     def on_click_solucion(e):
         global matriz, lista_soluciones, pasos
@@ -285,17 +288,19 @@ def pantalla_laberinto(page: ft.Page, modo):
         actualizarTabla(e, False, True, esMejor)
 
     """
-    Esta función es ejecutada cuando se presiona el botón "Resolver" y se encarga de resolver el laberinto y llamar a actualizarTabla para mostrar la solución gráficamente.
-    Si no se ha seleccionado un punto de inicio, se muestra un mensaje de error.
-    La función llama a las funciones encargadas del backtracking para resolver el laberinto y para obtener las listas de pasos.
-    Muestra por defecto la mejor solución del laberinto y muestra la lista de soluciones a la derecha.
-    Si es el modo automático se muestra la animación de todo el proceso de backtracking.
-    Si es el modo manual se muestra la animación de la mejor solución del laberinto únicamente.
+    This function is executed when the "Resolver" button is pressed and solves the maze and calls actualizarTabla to display the solution graphically.
+    If a starting point is not selected, an error message is displayed.
+    The function calls the backtracking functions to solve the maze and obtain the lists of steps.
+    By default, it displays the best solution to the maze and shows the list of solutions on the right.
+    In automatic mode, an animation of the entire backtracking process is shown.
+    In manual mode, only the animation of the best solution to the maze is shown.
     """
     def resolverLaberinto(e):
-        global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
+        global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos, resolviendo
         lista_soluciones = []
-        
+        if resolviendo:
+            return
+
         if tiene_inicio == False or tiene_final == False:
             
             dialogo_error = ft.AlertDialog(
@@ -317,12 +322,29 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.update()
 
         else:
+            resolviendo = True
             matriz = Laberintos.limpiar(matriz)
             listView_soluciones.controls = []
             actualizarTabla(e, generar=False)
             lista_soluciones = Laberintos.solucionarLaberinto(matriz)
             if lista_soluciones == -1:
-                return "ERROR"
+                def close_dlg(e):
+                    dlg_mod.open = False
+                    page.update()
+                
+                dlg_mod = ft.AlertDialog(
+                    modal=True,
+                    title=ft.Text("Error", font_family='Jersey 25', size=26),
+                    content=ft.Text("Ha ocurrido un error al resolver el laberinto, por favor vuelva a intentarlo con otro laberinto.", font_family='Jersey 25', size=18),
+                    actions=[
+                        ft.TextButton("Ok", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)))
+                    ],
+                    actions_alignment=ft.MainAxisAlignment.END,
+                )
+                page.overlay.append(dlg_mod)
+                dlg_mod.open = True
+                page.update()
+
             matriz = Laberintos.solucionOptima(lista_soluciones)
 
             index = lista_soluciones.index(matriz)
@@ -331,10 +353,6 @@ def pantalla_laberinto(page: ft.Page, modo):
                 pasos = Laberintos.obtenerPasos(matriz)
             else:
                 pasos = Laberintos.getTotalPasos()[index]
-            #if index != 0:
-            #    temp = lista_soluciones[index]
-            #    lista_soluciones[index] = lista_soluciones[0]
-            #    lista_soluciones[0] = temp
 
             for i in range(len(lista_soluciones)):
                 icono = ft.Icons.CHECK
@@ -360,16 +378,14 @@ def pantalla_laberinto(page: ft.Page, modo):
             seleccion_actual[0].bgcolor = ft.Colors.with_opacity(1, '#182C61')
             listView_soluciones.update()
             recorridos = []
-            for paso in pasos:#Laberintos.obtenerPasos(matriz):
+            for paso in pasos:
                 if pasos == []:
                     break
                 img = tabla_controls.controls[paso[0]].controls[1].controls[paso[1]]
                 antimg = None
                 if pasos.index(paso) != 0:
                     antimg = tabla_controls.controls[recorridos[pasos.index(paso)-1][0]].controls[1].controls[recorridos[pasos.index(paso)-1][1]]
-                #if paso in recorridos:
-                #    img.content.src = "camino1.jpg"
-                #else:
+
                 if antimg != None and antimg.content.src != "inicio_recorrido.jpg":
                     antimg.content.src = "camino_recorrido.jpg"
                 
@@ -382,13 +398,12 @@ def pantalla_laberinto(page: ft.Page, modo):
                     recorridos.append(paso)
                     page.update()
                     time.sleep(0.2)
+            
+            resolviendo = False
             actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
-            #if not isinstance(matriz, int):
-            #    actualizarTabla(e, False)
-
     """
-    Alerta para confirmar si el usuario realmente desea salir del laberinto.
+    Alert to confirm if the user really wants to exit the maze.
     """
     def confirmarVolver(e):
         def close_dlg(e):
@@ -436,7 +451,7 @@ def pantalla_laberinto(page: ft.Page, modo):
     )
     
     """
-    Esta función guarda la solución en un archivo CSV, tiene un directorio predeterminado para guardar los archivos pero el usuario puede guardarlo en otro.
+    This function saves the solution in a CSV file, it has a default directory to save the files but the user can save it in another one.
     """
     def guardarSolucion(e):
         global modoActual
@@ -444,7 +459,7 @@ def pantalla_laberinto(page: ft.Page, modo):
         file_picker.save_file(allowed_extensions=["csv"], initial_directory=documentos)
     
     """
-    Esta función carga la solución desde un archivo CSV, tiene un directorio predeterminado para cargar los archivos pero el usuario puede cargarlo desde otro.
+    This function loads the solution from a CSV file, it has a default directory to upload the files but the user can upload it from another one.
     """
     def cargarSolucion(e):
         global modoActual
@@ -484,12 +499,12 @@ def pantalla_laberinto(page: ft.Page, modo):
         mispasos = []
 
         """
-        Este evento se ejecuta cuando el jugador llega a la bandera final del laberinto en el modo automático.
-        Muestra un dialogo de alerta con distintas opciones para el usuario.
+        This event executes when the player reaches the maze's final flag in automatic mode.
+        It displays an alert dialog with various options for the user.
         """
         def mostrarFinal(texto, esMejor):
             """
-            Muestra la mejor solución del laberinto, esta opción solo se muestra cuando la solución que encontró el usuario no es la mejor.
+            Shows the best solution to the maze, this option is only displayed when the solution found by the user is not the best.
             """
             def ver_optima(e):
                 global matriz
@@ -499,7 +514,22 @@ def pantalla_laberinto(page: ft.Page, modo):
                 actualizarTabla(e, generar=False)
                 lista_soluciones = Laberintos.solucionarLaberinto(matriz)
                 if lista_soluciones == -1:
-                    return "ERROR"
+                    def close_dlg(e):
+                        dlg_mod.open = False
+                        page.update()
+                    
+                    dlg_mod = ft.AlertDialog(
+                        modal=True,
+                        title=ft.Text("Error", font_family='Jersey 25', size=26),
+                        content=ft.Text("Ha ocurrido un error al resolver el laberinto, por favor vuelva a intentarlo con otro laberinto.", font_family='Jersey 25', size=18),
+                        actions=[
+                            ft.TextButton("Ok", on_click=close_dlg, style=ft.ButtonStyle(text_style=ft.TextStyle(font_family='Jersey 25', size=18)))
+                        ],
+                        actions_alignment=ft.MainAxisAlignment.END,
+                    )
+                    page.overlay.append(dlg_mod)
+                    dlg_mod.open = True
+                    page.update()
                 matriz = Laberintos.solucionOptima(lista_soluciones)
                 pasos = Laberintos.obtenerPasos(matriz)
                 recorridos = []
@@ -522,7 +552,7 @@ def pantalla_laberinto(page: ft.Page, modo):
                 actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
             """
-            Limpia el laberinto y permite jugar de nuevo en el mismo mapa.
+            Clears the maze and allows you to play again on the same map.
             """
             def jugar_de_nuevo(e):
                 dlg_mod.open = False
@@ -557,12 +587,11 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.update()
         
         """
-        Recibe el evento de teclado (arriba, abajo, izquierda, derecha) y comprueba si el movimiento que desea hacer el jugador es valido.
-        Comprueba si el jugador llega a la bandera final del laberinto, si lo hace, muestra un dialogo de alerta con distintas opciones para el usuario.
+        Receives keyboard events (up, down, left, right) and checks if the player's desired move is valid.
+        Checks if the player reaches the maze's end flag. If so, displays an alert dialog with various options for the user.
         """
         def on_keyboard(e: ft.KeyboardEvent):
             global matriz_jugable, posicion_jugador
-            #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")
             
             if tiene_inicio and tiene_final:
                 if posicion_jugador == None:
@@ -603,33 +632,15 @@ def pantalla_laberinto(page: ft.Page, modo):
                 if e.key in ["Arrow Right", "Arrow Left", "Arrow Up", "Arrow Down"]:
                     if pos_anterior != posicion_jugador:
                         imgant = tabla_controls.controls[pos_anterior[0]].controls[1].controls[pos_anterior[1]]
-                        if 1==1:
-                            """
-                            if mispasos != [] and posicion_jugador in mispasos and imgant.content.src != "inicio.jpg":
-                                imgant.content.src = "camino1.jpg"
-                                if mispasos[-1] == posicion_jugador:
-                                    matriz_jugable[mispasos[-1][0]][mispasos[-1][1]] = 1
-                                    mispasos.pop()
-                                else:
-                                    index = mispasos.index(posicion_jugador)
-                                    for i in range(index, len(mispasos)):
-                                        img = tabla_controls.controls[mispasos[i][0]].controls[1].controls[mispasos[i][1]]
-                                        if img.content.src != "inicio.jpg":
-                                            img.content.src = "camino1.jpg"
-                                            matriz_jugable[mispasos[i][0]][mispasos[i][1]] = 1
-                                    for i in range(index, len(mispasos)):
-                                        mispasos.pop()
-                            
-                            else:
-                            """
-                            if imgant.content.src != "inicio.jpg" and imgant.content.src != "inicio_recorrido.jpg":
-                                if matriz_jugable[pos_anterior[0]][pos_anterior[1]] != 2:               
-                                    imgant.content.src = "camino_recorrido.jpg"
-                                    matriz_jugable[pos_anterior[0]][pos_anterior[1]] = 4
-                                mispasos.append(pos_anterior)
-                            else:
-                                imgant.content.src = "inicio_recorrido.jpg"
-                                mispasos.append(pos_anterior)   
+
+                        if imgant.content.src != "inicio.jpg" and imgant.content.src != "inicio_recorrido.jpg":
+                            if matriz_jugable[pos_anterior[0]][pos_anterior[1]] != 2:               
+                                imgant.content.src = "camino_recorrido.jpg"
+                                matriz_jugable[pos_anterior[0]][pos_anterior[1]] = 4
+                            mispasos.append(pos_anterior)
+                        else:
+                            imgant.content.src = "inicio_recorrido.jpg"
+                            mispasos.append(pos_anterior)   
                         
                         img = tabla_controls.controls[posicion_jugador[0]].controls[1].controls[posicion_jugador[1]]
                         if img.content.src != "inicio.jpg" and img.content.src != "inicio_recorrido.jpg":

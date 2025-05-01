@@ -1,7 +1,9 @@
 import random
 import copy
 from pathlib import Path
+
 resultado=[]
+total_pasos=[]
 conexiones=0
 
 """
@@ -75,7 +77,7 @@ def quitarCaminos(matriz, modo):
     return matriz
 
 """"
-Esta función cambia un 0 aleatorio cerca del punto final por un 1 cuando hay solamente una solución del laberinto.
+This function changes a random 0 near the end point to a 1 when there is only one solution to the maze.
 """
 def picarMuro(matriz, posX, posY):
     lista=[0,1,2,3]
@@ -123,11 +125,11 @@ def crearCaminosAleatorios(tamano, modo):
 
 """"
 This function create random routes in the maze.
-Se selecciona aleatoriamente la direccion a la cual se movera y luego valida si se puede mover en esa direccion y 
-
-Mover dos casillas en esa dirección, si el movimiento es válido y no ha sido llenado previamente se llena esa casilla
-y la casilla intermedia( la que está entre las dos casillas) con un 1.
-De forma aleatoria y sin excederse de 6 ocasiones se hacen conexiones entre caminos para generar más soluciones, esto se válida para que no se realice, si en la nueva posición no se pueden realizar más movimientos
+The direction in which it will move is randomly selected and then it is validated if it can move two squares in that direction, 
+if the movement is valid and has not been previously filled, 
+that space is filled and the intermediate space (the one between the two spaces) with a 1. 
+Randomly and without exceeding 6 occasions, connections are made between routes to generate more solutions, 
+this is validated so that it is not done, if in the new position no more movements can be made
 """
 def crearCaminosAleatorios_aux(matriz, posX, posY, anterior):
     # anterior means the direction from which the function came to this position
@@ -169,7 +171,7 @@ def crearCaminosAleatorios_aux(matriz, posX, posY, anterior):
     return False
     
 """
-Esta función comprueba si en la casilla que se encuentra en la coordenada (posX, posY) hay un cero (pared).
+This function checks if there is a 0 (wall) in the box located at the coordinate (posX, posY).
 """
 def comprobarCero(matriz, posX, posY):
     tamano=len(matriz)
@@ -177,7 +179,7 @@ def comprobarCero(matriz, posX, posY):
         return True
 
 """
-Esta función comprueba si en dos posiciones alrededor de la coordenada (posX, posY) hay un cero (pared).
+This function checks if there is a zero (wall) in the four positions around the coordinate (posX, posY), moving twice.
 """
 def comprobarConexionCaminos(matriz, posX, posY):
     if comprobarPosicionValida(len(matriz), posX-2, posY) and matriz[posX-2][posY]==0:
@@ -191,7 +193,7 @@ def comprobarConexionCaminos(matriz, posX, posY):
     return False
     
 """
-Esta función comprueba si la casilla que se encuentra en la coordenada (posX, posY) es valida y se encuentra dentro del laberinto.
+This function checks if the space located at the coordinate (posX, posY) is valid and is inside the maze.
 """
 def comprobarPosicionValida(tamano, x, y):
     if x>=0 and y>=0 and x<tamano and y<tamano:
@@ -199,7 +201,7 @@ def comprobarPosicionValida(tamano, x, y):
     return False
 
 """
-Ordena las soluciones de menor a mayor cantidad de pasos para llegar a la meta (cantidad mínima de pasos).
+Order the solutions from least to greatest number of steps to reach the finish (minimum number of steps).
 """
 def ordenarSoluciones(soluciones):
     if len(soluciones) <= 1:
@@ -215,10 +217,8 @@ def ordenarSoluciones(soluciones):
             mayores.append(solucion)
     return ordenarSoluciones(menores) + [pivote] + ordenarSoluciones(mayores)
 
-total_pasos=[]
-
 """
-Obtiene la lista de todos los pasos realizados para llegar a la meta.
+Gets the list of all steps taken to reach the finish.
 """
 def getTotalPasos():
     global total_pasos
@@ -227,7 +227,7 @@ def getTotalPasos():
     return t
 
 """
-Es la función principal del algoritmo de solución del laberinto.
+Is the main function of the maze solution algorithm.
 """
 def solucionarLaberinto(matriz):
     global resultado, total_pasos
@@ -245,11 +245,11 @@ def solucionarLaberinto(matriz):
     return resultado
 
 """
-- Esta función busca las soluciones del laberinto, mediante backtracking, y las guarda en la variable global "resultado".
-- La función recibe la matriz del laberinto, la coordenada de inicio (posX, posY), y la lista de pasos realizados hasta el momento (pasos). 
-- Según las coordenadas recibidas, valida los caminos hacia donde se pueda desplazarse y cada vez que se encuentra una intersección entre
-  dos o más caminos, se llama recursivamente a la misma función por cada posible camino que se pueda seguir.p
-- Cada vez que se llega a la meta (4) se guarda la matriz y la lista de pasos realizados en la variable global "resultado" y "total_pasos".
+This function searches for solutions to the maze using backtracking and saves them in the global variable "resultado".
+- The function receives the maze matrix, the starting coordinates (posX, posY), and the list of steps taken so far (pasos).
+- Based on the received coordinates, it validates the routes that can be navigated, 
+  and each time an intersection is found between two or more routes, the same function is called recursively for each possible path that can be followed.
+- Each time the finish is reached (4), the matrix and the list of steps taken are saved in the global variables "resultado" and "total_pasos".
 """   
 def solucionar_aux(matriz, posX, posY, pasos):
     global resultado, total_pasos
@@ -275,7 +275,6 @@ def solucionar_aux(matriz, posX, posY, pasos):
         pasos = []
         return True
     
-    
     pasos.append([posX, posY])
     if 1 not in simbolos:
         matriz[posX][posY] = 5
@@ -294,7 +293,7 @@ def solucionar_aux(matriz, posX, posY, pasos):
 
 #esta función devuelve la mejor solución dentro de las solu
 """
-Esta función recibe una lista de matrices y devuelve la mejor solución encontrada, buscando la que tenga la menor cantidad de pasos (4s en la matriz).
+This function receives a list of matrices and returns the best solution found, looking for the one with the fewest steps (4s in the matrix).
 """
 def solucionOptima(listaMatrices):
     cantPasosMejorSolucion=cantCuatros(listaMatrices[0])
@@ -306,9 +305,8 @@ def solucionOptima(listaMatrices):
             mejorSolucion=matriz
     return mejorSolucion
         
-
 """
-Esta función devuelve True si se encuentra la meta alrededor de la casilla que se encuentra en la coordenada (posX, posY).
+This function returns True if the finish is found around the square located at the coordinate (posX, posY).
 """
 def comprobarMetaAlrededores(matriz, x, y):
     if comprobarPosicionValida(len(matriz), x-1, y) and matriz[x-1][y] == 3:
@@ -322,7 +320,7 @@ def comprobarMetaAlrededores(matriz, x, y):
     return False
 
 """
-Esta función devuelve la cantidad de cuatros (4) que hay en la matriz.
+This function returns the number of fours (4) in the array.
 """
 def cantCuatros(matriz):
     resultado=0
@@ -333,7 +331,7 @@ def cantCuatros(matriz):
     return resultado
 
 """
-Esta función recibe la matriz y cambia todos los 4 por 1, es decir, elimina los pasos realizados.
+This function receives the matrix and changes all 4 to 1, that is, it eliminates the steps performed.
 """
 def limpiar(matriz):
     for i in range(len(matriz)):
@@ -343,7 +341,7 @@ def limpiar(matriz):
     return matriz
 
 """
-Esta función recibe la matriz y devuelve la lista de coordenadas (pasos) realizados para la solucion más óptima
+This function receives the matrix and returns the list of coordinates (steps) taken for the most optimal solution.
 """
 def obtenerPasos(matriz):
     coordenada_inicio = [0, 0]
