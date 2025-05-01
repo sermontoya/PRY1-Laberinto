@@ -16,6 +16,9 @@ def setDimension(tamano):
     global dimension
     dimension = tamano
 
+"""
+Desactiva los mensajes de ayuda durante la sesión.
+"""
 def desactivarMensajesError(e, codigo):
     global mostrarMensajesError1
     if codigo == 1:
@@ -34,7 +37,9 @@ def desactivarMensajesError(e, codigo):
     snackbar.open = True
     e.control.page.update()
 
-
+"""
+Limpia la matriz y la guarda en un archivo .csv en la ruta especificada.
+"""
 def guardarMatriz(matriz, ruta, modo):
     matriz= Laberintos.quitarCaminos(matriz, modo)
     if not ruta.endswith(".csv"):
@@ -47,6 +52,11 @@ def guardarMatriz(matriz, ruta, modo):
     except Exception as e:
         return e
 
+"""
+Carga la matriz desde un archivo .csv en la ruta especificada.
+En caso de que se haga desde el modo automático y no haya un punto de inicio en la matriz que se está cargando, se marcará un punto de inicio aleatorio.
+En caso de que se haga desde el modo manual y haya un punto de inicio en la matriz que se está cargando, se desmarcará el punto de inicio.
+"""
 def cargarMatriz(ruta, modo):
     global matriz, dimension, matriz_jugable
     try:
@@ -70,6 +80,9 @@ def cargarMatriz(ruta, modo):
     except Exception as e:
         return e
 
+"""
+Se encarga de mostrar la pantalla del laberinto y de manejar los eventos de la misma.
+"""
 def pantalla_laberinto(page: ft.Page, modo):
     page.window.maximized = True
     file_picker = ft.FilePicker()
@@ -101,6 +114,11 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     seleccion_actual = [None]
 
+    """
+    Esta función se encarga de manejar el evento cuando se presiona una casilla del laberinto.
+    Si la casilla es un camino vacío (1), aún no se ha seleccionado un punto de inicio y el modo es manual, se marca el punto de inicio en esa casilla.
+    Si ya se había seleccionado un punto de inicio y el modo es manual, se marca un nuevo punto de inicio en esa casilla.
+    """
     def clickImagen(e, x, y):
         global tiene_inicio, tiene_final, matriz_jugable, matriz
         if matriz[x][y] == 1:
@@ -116,16 +134,20 @@ def pantalla_laberinto(page: ft.Page, modo):
                 matriz[x][y] = 2
                 tiene_inicio = True
                 actualizarTabla(e, generar=False)
-                #elif tiene_final != True:
-                    #   matriz[x][y] = 3
-                    #   tiene_final = True
-
-                #actualizarTabla(e, False)
     
+    """
+    Recibe el evento cuando se presiona una casilla del laberinto y llama a la función clickImagen.
+    """
     def eventoClickImagen(e):
         x, y = e.control.data
         clickImagen(e, x, y)
 
+    """
+    Genera una tabla con las casillas del laberinto y las imágenes de cada casilla.
+    Recibe parametros opcionales, como:
+    - solucion: Si se desea mostrar la bandera de inicio marcada como solución (en amarillo o rojo según corresponda).
+    - esMejor: Si es la mejor solución del laberinto, se muestra en amarillo, si no lo es se muestra en rojo.
+    """
     def generarTabla(matriz, solucion=False, esMejor=False):
         global inicio, final
         tabla = []
@@ -201,6 +223,9 @@ def pantalla_laberinto(page: ft.Page, modo):
         alignment=ft.MainAxisAlignment.CENTER
     )
 
+    """
+    Recibe el evento cuando se selecciona un archivo y llama a la función guardarMatriz.
+    """
     def on_file_result(e: ft.FilePickerResultEvent):
         global modoActual
         if modoActual=="guardar":
@@ -221,16 +246,28 @@ def pantalla_laberinto(page: ft.Page, modo):
 
     file_picker.on_result = on_file_result
 
+    """
+    Actualiza la tabla del laberinto según los parámetros recibidos.
+    Recibe parametros opcionales, como:
+    - generar: Si se desea generar un nuevo laberinto por completo.
+    - solucion: Si lo que se va a mostrar es una solución del laberinto.
+    - esMejor: Si lo que se va a mostrar es la mejor solución del laberinto.
+    La función llama a la función generarTabla para generar la nueva tabla, la cual tiene su manera para interpretar los parámetros que se le envian.
+    """
     def actualizarTabla(e, generar=True, solucion=False, esMejor=False):
         global matriz
         if generar:
             global tiene_inicio, tiene_final
-            matriz = Laberintos.crearCaminoAleatorio(int(dimension.split("x")[0]))
+            matriz = Laberintos.crearCaminosAleatorios(int(dimension.split("x")[0]))
             tiene_inicio = False
             tiene_final = False
         tabla_controls.controls = generarTabla(matriz, solucion, esMejor)
         page.update()
 
+    """
+    Actualiza el laberinto gráficamente con una solución seleccionada de la lista de soluciones.
+    Si el indice seleccionado es 0, significa que se debe mostrar la mejor solución del laberinto.
+    """
     def on_click_solucion(e):
         global matriz, lista_soluciones, pasos
         pasos = []
@@ -247,6 +284,14 @@ def pantalla_laberinto(page: ft.Page, modo):
             esMejor = True
         actualizarTabla(e, False, True, esMejor)
 
+    """
+    Esta función es ejecutada cuando se presiona el botón "Resolver" y se encarga de resolver el laberinto y llamar a actualizarTabla para mostrar la solución gráficamente.
+    Si no se ha seleccionado un punto de inicio, se muestra un mensaje de error.
+    La función llama a las funciones encargadas del backtracking para resolver el laberinto y para obtener las listas de pasos.
+    Muestra por defecto la mejor solución del laberinto y muestra la lista de soluciones a la derecha.
+    Si es el modo automático se muestra la animación de todo el proceso de backtracking.
+    Si es el modo manual se muestra la animación de la mejor solución del laberinto únicamente.
+    """
     def resolverLaberinto(e):
         global matriz, lista_soluciones, tiene_inicio, tiene_final, pasos
         lista_soluciones = []
@@ -342,6 +387,9 @@ def pantalla_laberinto(page: ft.Page, modo):
             #if not isinstance(matriz, int):
             #    actualizarTabla(e, False)
 
+    """
+    Alerta para confirmar si el usuario realmente desea salir del laberinto.
+    """
     def confirmarVolver(e):
         def close_dlg(e):
             dlg_modal.open = False
@@ -387,11 +435,17 @@ def pantalla_laberinto(page: ft.Page, modo):
         scroll=ft.ScrollMode.AUTO,
     )
     
+    """
+    Esta función guarda la solución en un archivo CSV, tiene un directorio predeterminado para guardar los archivos pero el usuario puede guardarlo en otro.
+    """
     def guardarSolucion(e):
         global modoActual
         modoActual = "guardar"
         file_picker.save_file(allowed_extensions=["csv"], initial_directory=documentos)
-        
+    
+    """
+    Esta función carga la solución desde un archivo CSV, tiene un directorio predeterminado para cargar los archivos pero el usuario puede cargarlo desde otro.
+    """
     def cargarSolucion(e):
         global modoActual
         modoActual = "cargar"
@@ -429,9 +483,14 @@ def pantalla_laberinto(page: ft.Page, modo):
 
         mispasos = []
 
-
+        """
+        Este evento se ejecuta cuando el jugador llega a la bandera final del laberinto en el modo automático.
+        Muestra un dialogo de alerta con distintas opciones para el usuario.
+        """
         def mostrarFinal(texto, esMejor):
-
+            """
+            Muestra la mejor solución del laberinto, esta opción solo se muestra cuando la solución que encontró el usuario no es la mejor.
+            """
             def ver_optima(e):
                 global matriz
                 dlg_mod.open = False
@@ -462,6 +521,9 @@ def pantalla_laberinto(page: ft.Page, modo):
                     time.sleep(0.2)
                 actualizarTabla(e, generar=False, solucion=True, esMejor=True)
 
+            """
+            Limpia el laberinto y permite jugar de nuevo en el mismo mapa.
+            """
             def jugar_de_nuevo(e):
                 dlg_mod.open = False
                 global matriz_jugable, posicion_jugador, matriz, solucionesOrdenadas
@@ -493,7 +555,11 @@ def pantalla_laberinto(page: ft.Page, modo):
             page.overlay.append(dlg_mod)
             dlg_mod.open = True
             page.update()
-            
+        
+        """
+        Recibe el evento de teclado (arriba, abajo, izquierda, derecha) y comprueba si el movimiento que desea hacer el jugador es valido.
+        Comprueba si el jugador llega a la bandera final del laberinto, si lo hace, muestra un dialogo de alerta con distintas opciones para el usuario.
+        """
         def on_keyboard(e: ft.KeyboardEvent):
             global matriz_jugable, posicion_jugador
             #print(f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}")

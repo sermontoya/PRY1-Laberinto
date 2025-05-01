@@ -112,9 +112,8 @@ manual game means that the start point is chosen by the player and the end point
 def crearCaminosAleatorios(tamano, modo):
     posX= random.randint(0, tamano-1)
     posY= random.randint(0, tamano-1)
-    
     matriz=crearMatrizNula(tamano, tamano)
-    crearCaminoAleatorio(matriz, posX, posY, -1)
+    crearCaminosAleatorios_aux(matriz, posX, posY, -1)
     matriz[posX][posY]=3
     if modo:
         matriz= marcarPuntoInicio(matriz)
@@ -123,13 +122,14 @@ def crearCaminosAleatorios(tamano, modo):
     return matriz
 
 """"
-This function create a random route in the maze.
+This function create random routes in the maze.
+Se selecciona aleatoriamente la direccion a la cual se movera y luego valida si se puede mover en esa direccion y 
 
-
-
-
+Mover dos casillas en esa dirección, si el movimiento es válido y no ha sido llenado previamente se llena esa casilla
+y la casilla intermedia( la que está entre las dos casillas) con un 1.
+De forma aleatoria y sin excederse de 6 ocasiones se hacen conexiones entre caminos para generar más soluciones, esto se válida para que no se realice, si en la nueva posición no se pueden realizar más movimientos
 """
-def crearCaminoAleatorio(matriz, posX, posY, anterior):
+def crearCaminosAleatorios_aux(matriz, posX, posY, anterior):
     # anterior means the direction from which the function came to this position
     # 0 coming from the left, 1 coming from the right, 2 coming from above, 3 coming from below
     global conexiones
@@ -159,12 +159,12 @@ def crearCaminoAleatorio(matriz, posX, posY, anterior):
             if rand<=8 or conexiones>6:
                 if comprobarCero(matriz, intermedioX, intermedioY) and comprobarCero(matriz, nuevaX, nuevaY):
                     matriz[intermedioX][intermedioY]=1
-                    crearCaminoAleatorio(matriz, nuevaX, nuevaY, aux)
+                    crearCaminosAleatorios_aux(matriz, nuevaX, nuevaY, aux)
             else:
                 if comprobarConexionCaminos(matriz, nuevaX, nuevaY):
                     matriz[intermedioX][intermedioY]=1
                     conexiones+=1
-                    crearCaminoAleatorio(matriz, nuevaX, nuevaY, aux)
+                    crearCaminosAleatorios_aux(matriz, nuevaX, nuevaY, aux)
                 
     return False
     
@@ -177,7 +177,7 @@ def comprobarCero(matriz, posX, posY):
         return True
 
 """
-
+Esta función comprueba si en dos posiciones alrededor de la coordenada (posX, posY) hay un cero (pared).
 """
 def comprobarConexionCaminos(matriz, posX, posY):
     if comprobarPosicionValida(len(matriz), posX-2, posY) and matriz[posX-2][posY]==0:
@@ -198,7 +198,9 @@ def comprobarPosicionValida(tamano, x, y):
         return True
     return False
 
-
+"""
+Ordena las soluciones de menor a mayor cantidad de pasos para llegar a la meta (cantidad mínima de pasos).
+"""
 def ordenarSoluciones(soluciones):
     if len(soluciones) <= 1:
         return soluciones
@@ -215,12 +217,18 @@ def ordenarSoluciones(soluciones):
 
 total_pasos=[]
 
+"""
+Obtiene la lista de todos los pasos realizados para llegar a la meta.
+"""
 def getTotalPasos():
     global total_pasos
     t = copy.deepcopy(total_pasos)
     total_pasos = []
     return t
 
+"""
+Es la función principal del algoritmo de solución del laberinto.
+"""
 def solucionarLaberinto(matriz):
     global resultado, total_pasos
     total_pasos=[]
@@ -235,7 +243,14 @@ def solucionarLaberinto(matriz):
 
     solucionar_aux(matriz, x, y, [])
     return resultado
-            
+
+"""
+- Esta función busca las soluciones del laberinto, mediante backtracking, y las guarda en la variable global "resultado".
+- La función recibe la matriz del laberinto, la coordenada de inicio (posX, posY), y la lista de pasos realizados hasta el momento (pasos). 
+- Según las coordenadas recibidas, valida los caminos hacia donde se pueda desplazarse y cada vez que se encuentra una intersección entre
+  dos o más caminos, se llama recursivamente a la misma función por cada posible camino que se pueda seguir.p
+- Cada vez que se llega a la meta (4) se guarda la matriz y la lista de pasos realizados en la variable global "resultado" y "total_pasos".
+"""   
 def solucionar_aux(matriz, posX, posY, pasos):
     global resultado, total_pasos
     arriba, abajo, izquierda, derecha = 0, 0, 0, 0
@@ -277,7 +292,10 @@ def solucionar_aux(matriz, posX, posY, pasos):
         solucionar_aux(copy.deepcopy(matriz), posX+1, posY, pasos)
 
 
-
+#esta función devuelve la mejor solución dentro de las solu
+"""
+Esta función recibe una lista de matrices y devuelve la mejor solución encontrada, buscando la que tenga la menor cantidad de pasos (4s en la matriz).
+"""
 def solucionOptima(listaMatrices):
     cantPasosMejorSolucion=cantCuatros(listaMatrices[0])
     mejorSolucion=listaMatrices[0]
@@ -289,7 +307,9 @@ def solucionOptima(listaMatrices):
     return mejorSolucion
         
 
-
+"""
+Esta función devuelve True si se encuentra la meta alrededor de la casilla que se encuentra en la coordenada (posX, posY).
+"""
 def comprobarMetaAlrededores(matriz, x, y):
     if comprobarPosicionValida(len(matriz), x-1, y) and matriz[x-1][y] == 3:
         return True
@@ -301,7 +321,9 @@ def comprobarMetaAlrededores(matriz, x, y):
         return True
     return False
 
-
+"""
+Esta función devuelve la cantidad de cuatros (4) que hay en la matriz.
+"""
 def cantCuatros(matriz):
     resultado=0
     for i in matriz:
@@ -310,6 +332,9 @@ def cantCuatros(matriz):
                 resultado+=1
     return resultado
 
+"""
+Esta función recibe la matriz y cambia todos los 4 por 1, es decir, elimina los pasos realizados.
+"""
 def limpiar(matriz):
     for i in range(len(matriz)):
         for j in range(len(matriz[0])):
@@ -317,17 +342,16 @@ def limpiar(matriz):
                 matriz[i][j]=1
     return matriz
 
+"""
+Esta función recibe la matriz y devuelve la lista de coordenadas (pasos) realizados para la solucion más óptima
+"""
 def obtenerPasos(matriz):
     coordenada_inicio = [0, 0]
-    coordenada_final = [0, 0]
     coordenadas = []
-    visitadas = []
     for i in range(len(matriz)):
         for j in range(len(matriz[0])):
             if matriz[i][j]==2:
                 coordenada_inicio = [i, j]
-            elif matriz[i][j]==3:
-                coordenada_final = [i, j]
     coordenadas.append(coordenada_inicio)
     n = 0
     encontrado = False
@@ -379,8 +403,3 @@ def obtenerPasos(matriz):
                 continue  
 
     return coordenadas
-        
-
-
-
-
